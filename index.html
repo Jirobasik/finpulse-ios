@@ -251,11 +251,25 @@
               <span id="cloudSyncText">Облако: БД</span>
             </button>
           </div>
-          <p class="text-[12px] text-[#8E8E93] leading-tight mt-0.5">ЗП 10-го (нал 10–15) • Аванс 25-го</p>
+          <button onclick="openSettingsModal(false)" class="text-[12px] text-[#8E8E93] hover:text-[#0A84FF] leading-tight mt-0.5 flex items-center gap-1.5 transition cursor-pointer text-left" title="Настроить дни зарплаты, аванса и валюту">
+            <span id="headerScheduleSub">ЗП 10-го • Аванс 25-го</span>
+            <svg class="w-3 h-3 opacity-75 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </button>
         </div>
       </div>
 
       <div class="flex items-center gap-2">
+        <button onclick="openSettingsModal(false)" aria-label="Настройки профиля" title="Настроить дни зарплаты и параметры" class="min-h-[38px] px-2.5 py-1.5 rounded-xl surface-pill hover:bg-white/10 text-white text-xs font-medium flex items-center gap-1.5 transition cursor-pointer">
+          <svg class="w-4 h-4 text-[#0A84FF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span class="hidden md:inline">График ЗП</span>
+        </button>
+
         <button onclick="toggleTheme()" id="themeToggleBtn" aria-label="Переключить тему" title="Светлая / Тёмная тема" class="min-h-[38px] w-[38px] rounded-xl surface-pill hover:bg-white/10 text-white flex items-center justify-center transition cursor-pointer">
           <svg id="themeIconSun" class="w-4 h-4 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="5"></circle>
@@ -380,33 +394,38 @@
       <div class="flex items-center gap-2 overflow-x-auto no-scrollbar mt-3 pt-0.5">
         <button onclick="quickAdd('Кофе 350')" class="shrink-0 min-h-[34px] px-3 py-1.5 rounded-full surface-pill hover:bg-white/10 text-xs text-[#E5E5EA] flex items-center gap-1.5 transition cursor-pointer tabular-nums">
           <svg class="w-3.5 h-3.5 text-[#8E8E93]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path></svg>
-          Кофе 350 ₽
+          Кофе 350
         </button>
         <button onclick="quickAdd('Продукты 1800')" class="shrink-0 min-h-[34px] px-3 py-1.5 rounded-full surface-pill hover:bg-white/10 text-xs text-[#E5E5EA] flex items-center gap-1.5 transition cursor-pointer tabular-nums">
           <svg class="w-3.5 h-3.5 text-[#8E8E93]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-          Продукты 1 800 ₽
+          Продукты 1 800
         </button>
         <button onclick="quickAdd('Такси 550')" class="shrink-0 min-h-[34px] px-3 py-1.5 rounded-full surface-pill hover:bg-white/10 text-xs text-[#E5E5EA] flex items-center gap-1.5 transition cursor-pointer tabular-nums">
           <svg class="w-3.5 h-3.5 text-[#8E8E93]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
-          Такси 550 ₽
+          Такси 550
         </button>
         <button onclick="quickAdd('+50000 Зарплата')" class="shrink-0 min-h-[34px] px-3 py-1.5 rounded-full bg-[#30D158]/10 border border-[#30D158]/25 hover:bg-[#30D158]/20 text-xs text-[#30D158] font-medium flex items-center gap-1.5 transition cursor-pointer tabular-nums">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          50 000 ₽ Доход
+          +50 000 Доход
         </button>
       </div>
     </section>
 
-    <!-- TAB 1: OVERVIEW -->
-    <div id="tab-overview" class="space-y-5">
+    <!-- TAB 1: ГЛАВНАЯ (OVERVIEW - ONLY CORE SUMMARY) -->
+    <div id="tab-overview" class="space-y-4">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
         <div class="surface-card p-5 lg:col-span-7 flex flex-col justify-between">
           <div>
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between gap-2">
               <span class="text-[13px] font-medium text-[#8E8E93]">Свободный остаток (после резерва на кредиты)</span>
-              <span id="kpiDtiBadge" class="text-[11px] px-2.5 py-0.5 rounded-full bg-white/[0.06] text-[#8E8E93] font-semibold tabular-nums">ПДН 0%</span>
+              <div class="flex items-center gap-1.5">
+                <span id="kpiDtiBadge" class="text-[11px] px-2.5 py-0.5 rounded-full bg-white/[0.06] text-[#8E8E93] font-semibold tabular-nums">ПДН 0%</span>
+                <button onclick="openSettingsModal(false)" class="text-[11px] px-2.5 py-0.5 rounded-full bg-[#0A84FF]/15 text-[#0A84FF] hover:bg-[#0A84FF]/25 font-medium transition cursor-pointer">
+                  Настроить дни ЗП
+                </button>
+              </div>
             </div>
-            <div id="kpiFreeMoney" class="text-[36px] sm:text-[42px] font-bold tracking-tight tabular-nums mt-1 leading-none text-white">
+            <div id="kpiFreeMoney" class="text-[36px] sm:text-[42px] font-bold tracking-tight tabular-nums mt-1.5 leading-none text-white">
               0 ₽
             </div>
           </div>
@@ -415,25 +434,21 @@
             <div>
               <div class="text-[12px] text-[#8E8E93]">Безопасный лимит в день</div>
               <div id="kpiSafeDaily" class="text-[20px] font-semibold text-[#30D158] tabular-nums mt-0.5">0 ₽/дн</div>
-              <div id="kpiDaysToPayday" class="text-[11px] text-[#636366] mt-0.5">До выплаты — дн.</div>
+              <div id="kpiDaysToPayday" class="text-[11px] text-[#8E8E93] mt-0.5">До выплаты — дн.</div>
             </div>
             <div>
               <div class="text-[12px] text-[#8E8E93]">Фактический баланс</div>
               <div id="kpiNetBalance" class="text-[20px] font-semibold text-white tabular-nums mt-0.5">0 ₽</div>
-              <div id="kpiReserveSub" class="text-[11px] text-[#636366] mt-0.5 tabular-nums">Резерв кредитов: 0 ₽</div>
+              <div id="kpiReserveSub" class="text-[11px] text-[#8E8E93] mt-0.5 tabular-nums">Резерв кредитов: 0 ₽</div>
             </div>
           </div>
         </div>
 
         <div class="lg:col-span-5 grid grid-cols-2 lg:grid-cols-1 gap-4">
-          <div class="surface-card p-4 flex flex-col justify-between">
+          <div onclick="switchTab('analytics')" class="surface-card p-4 flex flex-col justify-between cursor-pointer hover:border-white/20 transition">
             <div class="flex items-center justify-between">
               <span class="text-[12px] font-medium text-[#8E8E93]">Поток за месяц</span>
-              <svg class="w-4 h-4 text-[#8E8E93]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="20" x2="12" y2="10"></line>
-                <line x1="18" y1="20" x2="18" y2="4"></line>
-                <line x1="6" y1="20" x2="6" y2="16"></line>
-              </svg>
+              <span class="text-[11px] text-[#0A84FF] font-medium">Графики →</span>
             </div>
             <div class="mt-3 space-y-2">
               <div class="flex items-center justify-between text-sm">
@@ -447,13 +462,10 @@
             </div>
           </div>
 
-          <div class="surface-card p-4 flex flex-col justify-between">
+          <div onclick="switchTab('credits')" class="surface-card p-4 flex flex-col justify-between cursor-pointer hover:border-white/20 transition">
             <div class="flex items-center justify-between">
               <span class="text-[12px] font-medium text-[#8E8E93]">Кредитный портфель</span>
-              <svg class="w-4 h-4 text-[#8E8E93]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-                <line x1="2" y1="10" x2="22" y2="10"></line>
-              </svg>
+              <span class="text-[11px] text-[#0A84FF] font-medium">Все кредиты →</span>
             </div>
             <div class="mt-2">
               <div id="kpiTotalDebt" class="text-[22px] font-bold text-white tabular-nums">0 ₽</div>
@@ -464,10 +476,33 @@
           </div>
         </div>
       </div>
+
+      <!-- Compact Overview Widgets (Recent 3 Operations + Next 2 Credits) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="surface-card p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-[14px] font-semibold text-white">Последние операции</h3>
+            <button onclick="switchTab('transactions')" class="text-xs text-[#0A84FF] hover:opacity-80 font-medium cursor-pointer">
+              Вся история →
+            </button>
+          </div>
+          <div id="overviewRecentTransactions" class="divide-y divide-white/[0.05] text-xs"></div>
+        </div>
+
+        <div class="surface-card p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-[14px] font-semibold text-white">Ближайшие платежи по кредитам</h3>
+            <button onclick="switchTab('credits')" class="text-xs text-[#0A84FF] hover:opacity-80 font-medium cursor-pointer">
+              Управление кредитами →
+            </button>
+          </div>
+          <div id="overviewNextCredits" class="space-y-2 text-xs"></div>
+        </div>
+      </div>
     </div>
 
-    <!-- TAB 2: CREDITS & PAYOFF SIMULATOR -->
-    <div id="tab-credits" class="space-y-5">
+    <!-- TAB 2: CREDITS & PAYOFF SIMULATOR (Strict Tab View) -->
+    <div id="tab-credits" class="hidden space-y-5">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
         <div class="surface-card p-5 lg:col-span-7 space-y-4">
           <div class="flex items-center justify-between gap-2">
@@ -487,11 +522,11 @@
               <input id="crName" required placeholder="Например: Т-Банк" class="w-full h-10 rounded-xl bg-[#121215] border border-white/10 px-3 text-white focus:outline-none focus:border-[#0A84FF]" />
             </div>
             <div>
-              <label for="crDebt" class="text-[#8E8E93] block mb-1">Остаток долга (₽)</label>
+              <label for="crDebt" class="text-[#8E8E93] block mb-1">Остаток долга</label>
               <input id="crDebt" type="number" required placeholder="100000" class="w-full h-10 rounded-xl bg-[#121215] border border-white/10 px-3 text-white focus:outline-none focus:border-[#0A84FF]" />
             </div>
             <div>
-              <label for="crMonthly" class="text-[#8E8E93] block mb-1">Платёж в месяц (₽)</label>
+              <label for="crMonthly" class="text-[#8E8E93] block mb-1">Платёж в месяц</label>
               <input id="crMonthly" type="number" required placeholder="10000" class="w-full h-10 rounded-xl bg-[#121215] border border-white/10 px-3 text-white focus:outline-none focus:border-[#0A84FF]" />
             </div>
             <div>
@@ -565,8 +600,8 @@
       </div>
     </div>
 
-    <!-- TAB 3: ANALYTICS CHARTS -->
-    <div id="tab-analytics" class="space-y-5">
+    <!-- TAB 3: ANALYTICS CHARTS (Strict Tab View) -->
+    <div id="tab-analytics" class="hidden space-y-5">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
         <div class="surface-card p-5 lg:col-span-7 flex flex-col justify-between">
           <div class="mb-4">
@@ -590,8 +625,8 @@
       </div>
     </div>
 
-    <!-- TAB 4: TRANSACTIONS HISTORY -->
-    <div id="tab-transactions" class="space-y-5">
+    <!-- TAB 4: TRANSACTIONS HISTORY (Strict Tab View) -->
+    <div id="tab-transactions" class="hidden space-y-5">
       <section class="surface-card p-5">
         <div class="flex items-center justify-between gap-2 mb-3">
           <div>
@@ -713,23 +748,12 @@
   <!-- Native iOS Bottom Tab Bar -->
   <nav class="fixed bottom-0 left-0 right-0 z-40 ios-blur border-t border-white/[0.07] px-2 pt-1.5 pb-[calc(8px+env(safe-area-inset-bottom))]">
     <div id="bottomNavGrid" class="max-w-md mx-auto grid grid-cols-5 gap-1">
-      <button onclick="switchTab('all')" id="nav-all" class="flex flex-col items-center justify-center py-1 text-[#0A84FF] transition cursor-pointer">
+      <button onclick="switchTab('overview')" id="nav-overview" class="flex flex-col items-center justify-center py-1 text-[#0A84FF] transition cursor-pointer">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="7" height="7" rx="1"></rect>
-          <rect x="14" y="3" width="7" height="7" rx="1"></rect>
-          <rect x="14" y="14" width="7" height="7" rx="1"></rect>
-          <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
         </svg>
-        <span class="text-[10px] font-medium mt-1">Все</span>
-      </button>
-
-      <button onclick="switchTab('overview')" id="nav-overview" class="flex flex-col items-center justify-center py-1 text-[#8E8E93] hover:text-white transition cursor-pointer">
-        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path>
-          <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path>
-          <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path>
-        </svg>
-        <span class="text-[10px] font-medium mt-1">Баланс</span>
+        <span class="text-[10px] font-medium mt-1">Главная</span>
       </button>
 
       <button onclick="switchTab('credits')" id="nav-credits" class="flex flex-col items-center justify-center py-1 text-[#8E8E93] hover:text-white transition cursor-pointer">
@@ -761,6 +785,14 @@
         <span class="text-[10px] font-medium mt-1">История</span>
       </button>
 
+      <button onclick="openSettingsModal(false)" id="nav-settings" class="flex flex-col items-center justify-center py-1 text-[#8E8E93] hover:text-white transition cursor-pointer">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <span class="text-[10px] font-medium mt-1">Настройки</span>
+      </button>
+
       <!-- Admin Tab Button (Hidden for non-admins) -->
       <button onclick="switchTab('admin')" id="nav-admin" class="hidden flex-col items-center justify-center py-1 text-[#8E8E93] hover:text-white transition cursor-pointer">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
@@ -770,6 +802,82 @@
       </button>
     </div>
   </nav>
+
+  <!-- Quick Setup & Personal Customization Modal (Onboarding + Settings) -->
+  <div id="settingsModal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="surface-card max-w-lg w-full p-6 space-y-4 my-auto">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <span id="settingsOnboardingBadge" class="hidden inline-block text-[10px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#30D158]/15 text-[#30D158] mb-1.5">
+            Быстрая настройка профиля
+          </span>
+          <h2 id="settingsModalTitle" class="text-[18px] font-semibold text-white">Персональные настройки</h2>
+          <p id="settingsModalSub" class="text-[12px] text-[#8E8E93] mt-0.5">Укажите ваш график зарплаты, чтобы система точно считала дневной лимит</p>
+        </div>
+        <button onclick="closeSettingsModal()" class="w-8 h-8 rounded-full bg-[#1C1C21] text-[#8E8E93] hover:text-white flex items-center justify-center shrink-0 cursor-pointer">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <form onsubmit="saveUserSettings(event)" class="space-y-3.5 text-xs">
+        <div>
+          <label for="setPayoutMode" class="block text-[#8E8E93] font-medium mb-1.5">Как вы получаете доход?</label>
+          <select id="setPayoutMode" onchange="updateSettingsFieldsVisibility()" class="w-full h-11 rounded-xl bg-[#1C1C21] border border-white/10 px-3 text-white text-[13px] focus:outline-none focus:border-[#0A84FF]">
+            <option value="two_dates">2 раза в месяц (Зарплата и Аванс)</option>
+            <option value="one_date">1 раз в месяц (Фиксированный день)</option>
+            <option value="flexible">Свободный график / Фриланс</option>
+          </select>
+        </div>
+
+        <div id="setDatesGrid" class="grid grid-cols-2 gap-3">
+          <div id="setSalaryDayWrap">
+            <label for="setSalaryDay" id="setSalaryDayLabel" class="block text-[#8E8E93] font-medium mb-1">День основной ЗП (1–31)</label>
+            <input id="setSalaryDay" type="number" min="1" max="31" required value="10" class="w-full h-10 rounded-xl bg-[#1C1C21] border border-white/10 px-3 text-white text-sm tabular-nums focus:outline-none focus:border-[#0A84FF]" />
+          </div>
+          <div id="setAdvanceDayWrap">
+            <label for="setAdvanceDay" class="block text-[#8E8E93] font-medium mb-1">День аванса (1–31)</label>
+            <input id="setAdvanceDay" type="number" min="1" max="31" value="25" class="w-full h-10 rounded-xl bg-[#1C1C21] border border-white/10 px-3 text-white text-sm tabular-nums focus:outline-none focus:border-[#0A84FF]" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="setIncomeGoal" class="block text-[#8E8E93] font-medium mb-1">Плановый доход в месяц</label>
+            <input id="setIncomeGoal" type="number" min="0" step="1000" placeholder="100000" value="100000" class="w-full h-10 rounded-xl bg-[#1C1C21] border border-white/10 px-3 text-white text-sm tabular-nums focus:outline-none focus:border-[#0A84FF]" />
+          </div>
+          <div>
+            <label for="setCurrency" class="block text-[#8E8E93] font-medium mb-1">Валюта счёта</label>
+            <select id="setCurrency" class="w-full h-10 rounded-xl bg-[#1C1C21] border border-white/10 px-3 text-white text-sm focus:outline-none focus:border-[#0A84FF]">
+              <option value="₽">Российский рубль (₽)</option>
+              <option value="$">Доллар США ($)</option>
+              <option value="€">Евро (€)</option>
+              <option value="₸">Казахстанский тенге (₸)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label for="setCashWindow" class="block text-[#8E8E93] font-medium mb-1">Пометка к графику (необязательно)</label>
+          <input id="setCashWindow" type="text" maxlength="45" placeholder="Например: нал 10–15, премия 20-го или оставьте пустым" class="w-full h-10 rounded-xl bg-[#1C1C21] border border-white/10 px-3 text-white text-xs focus:outline-none focus:border-[#0A84FF]" />
+        </div>
+
+        <div id="setInitialBalanceWrap" class="p-3.5 rounded-2xl bg-[#30D158]/10 border border-[#30D158]/25 space-y-1.5">
+          <label for="setInitialBalance" class="block text-[#30D158] font-semibold">Текущий остаток денег на руках / карте (для старта)</label>
+          <input id="setInitialBalance" type="number" step="100" placeholder="Например: 35000 (оставьте пустым, если не нужно)" class="w-full h-10 rounded-xl bg-[#121215] border border-white/10 px-3 text-white text-sm tabular-nums focus:outline-none focus:border-[#30D158]" />
+          <p class="text-[11px] text-[#8E8E93]">Если указать сумму, она сразу зачислится на ваш баланс как стартовый остаток.</p>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button type="button" onclick="closeSettingsModal()" class="px-4 py-2.5 rounded-xl bg-[#1C1C21] text-[#8E8E93] hover:text-white text-xs font-medium transition cursor-pointer">
+            Позже
+          </button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-white text-[#09090B] hover:bg-neutral-200 text-xs font-semibold transition cursor-pointer">
+            Сохранить настройки
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- iOS Sheet Modal -->
   <div id="shortcutModal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
@@ -897,15 +1005,32 @@
       return {
         settings: {
           currency: '₽',
+          payoutMode: 'two_dates',
           paydayDay: 25,
           salaryDay: 10,
           advanceDay: 25,
-          cashWindow: '10–15 числа',
+          cashWindow: '',
           monthlyIncomeGoal: 100000
         },
         transactions: [],
         credits: []
       };
+    }
+
+    function formatScheduleSubtitle(settings) {
+      const s = settings || {};
+      const mode = s.payoutMode || 'two_dates';
+      const sal = Math.min(31, Math.max(1, Number(s.salaryDay) || 10));
+      const adv = Math.min(31, Math.max(1, Number(s.advanceDay) || 25));
+      const note = s.cashWindow ? String(s.cashWindow).trim() : '';
+
+      if (mode === 'flexible') {
+        return note ? `Свободный график (${note})` : 'Свободный график доходов';
+      }
+      if (mode === 'one_date') {
+        return `Выплата ${sal}-го числа${note ? ` (${note})` : ''}`;
+      }
+      return `ЗП ${sal}-го${note ? ` (${note})` : ''} • Аванс ${adv}-го`;
     }
 
     // ============================================================================
@@ -1123,7 +1248,10 @@
     let categoryChartInstance = null;
     let debtPayoffChartInstance = null;
 
-    const fmt = (n) => Number(n || 0).toLocaleString('ru-RU') + ' ₽';
+    const fmt = (n) => {
+      const curr = (appData && appData.settings && appData.settings.currency) || '₽';
+      return Number(n || 0).toLocaleString('ru-RU') + ' ' + curr;
+    };
 
     // ============================================================================
     // AUTHENTICATION FLOW (Login / Register / Session Restore / Logout)
@@ -1160,6 +1288,8 @@
       const errBox = document.getElementById('authErrorBox');
       errBox.classList.add('hidden');
 
+      const wasRegisterMode = (authMode === 'register');
+
       // WAF input check
       if (/<\s*script|javascript:|onerror=|onload=|union\s+select/i.test(usernameInput)) {
         const db = loadLocalMultiDb();
@@ -1191,7 +1321,8 @@
           };
           localStorage.setItem(SESSION_KEY, JSON.stringify(currentSession));
           document.getElementById('authPassword').value = '';
-          onAuthSuccess();
+          await onAuthSuccess();
+          if (wasRegisterMode) openSettingsModal(true);
           return;
         }
       } catch (err) {
@@ -1269,7 +1400,7 @@
         };
         localStorage.setItem(SESSION_KEY, JSON.stringify(currentSession));
         document.getElementById('authPassword').value = '';
-        onAuthSuccess();
+        await onAuthSuccess();
       } else {
         // Register mode
         if (!db.system.allowRegistration) {
@@ -1314,7 +1445,8 @@
         };
         localStorage.setItem(SESSION_KEY, JSON.stringify(currentSession));
         document.getElementById('authPassword').value = '';
-        onAuthSuccess();
+        await onAuthSuccess();
+        openSettingsModal(true);
       }
     }
 
@@ -1322,10 +1454,10 @@
       localStorage.removeItem(SESSION_KEY);
       currentSession = null;
       document.getElementById('authScreen').classList.remove('hidden');
-      switchTab('all');
+      switchTab('overview');
     }
 
-    function onAuthSuccess() {
+    async function onAuthSuccess() {
       document.getElementById('authScreen').classList.add('hidden');
       document.getElementById('currentUserBadge').textContent = currentSession.username;
 
@@ -1347,17 +1479,19 @@
 
       document.getElementById('userShortcutWebhookCode').textContent = window.location.origin + window.location.pathname;
 
-      loadDashboard();
+      switchTab('overview');
+      await loadDashboard();
     }
 
     function switchTab(tabName) {
+      if (tabName === 'all') tabName = 'overview';
       const isAdmin = currentSession && currentSession.role === 'admin';
       const sections = ['overview', 'credits', 'analytics', 'transactions'];
 
       sections.forEach(s => {
         const el = document.getElementById('tab-' + s);
         if (!el) return;
-        if (tabName === 'all' || tabName === s) {
+        if (tabName === s) {
           el.classList.remove('hidden');
         } else {
           el.classList.add('hidden');
@@ -1376,7 +1510,7 @@
         quickInput.classList.remove('hidden');
       }
 
-      ['all', ...sections, 'admin'].forEach(navId => {
+      [...sections, 'admin'].forEach(navId => {
         const btn = document.getElementById('nav-' + navId);
         if (!btn) return;
         const hiddenClass = (navId === 'admin' && !isAdmin) ? 'hidden ' : 'flex ';
@@ -1386,6 +1520,126 @@
           btn.className = hiddenClass + 'flex-col items-center justify-center py-1 text-[#8E8E93] hover:text-white transition cursor-pointer';
         }
       });
+
+      if (tabName === 'analytics' && appData) {
+        setTimeout(() => renderCharts(appData, calculateAnalyticsClient(appData)), 20);
+      } else if (tabName === 'credits' && appData) {
+        setTimeout(() => updatePayoffSimulator(), 20);
+      }
+    }
+
+    // ============================================================================
+    // PERSONAL SETTINGS & POST-REGISTRATION QUICK SETUP WIZARD
+    // ============================================================================
+    function updateSettingsFieldsVisibility() {
+      const mode = document.getElementById('setPayoutMode').value;
+      const datesGrid = document.getElementById('setDatesGrid');
+      const salaryWrap = document.getElementById('setSalaryDayWrap');
+      const advanceWrap = document.getElementById('setAdvanceDayWrap');
+      const salaryLabel = document.getElementById('setSalaryDayLabel');
+
+      if (mode === 'flexible') {
+        datesGrid.classList.add('hidden');
+      } else if (mode === 'one_date') {
+        datesGrid.classList.remove('hidden');
+        datesGrid.className = 'grid grid-cols-1 gap-3';
+        salaryWrap.classList.remove('hidden');
+        advanceWrap.classList.add('hidden');
+        salaryLabel.textContent = 'День выплаты дохода (1–31)';
+      } else {
+        datesGrid.classList.remove('hidden');
+        datesGrid.className = 'grid grid-cols-2 gap-3';
+        salaryWrap.classList.remove('hidden');
+        advanceWrap.classList.remove('hidden');
+        salaryLabel.textContent = 'День основной ЗП (1–31)';
+      }
+    }
+
+    function openSettingsModal(isOnboarding = false) {
+      const s = (appData && appData.settings) || {};
+      const badge = document.getElementById('settingsOnboardingBadge');
+      const title = document.getElementById('settingsModalTitle');
+      const sub = document.getElementById('settingsModalSub');
+      const initBalInput = document.getElementById('setInitialBalance');
+
+      if (isOnboarding) {
+        badge.classList.remove('hidden');
+        title.textContent = 'Добро пожаловать в FinPulse!';
+        sub.textContent = 'Быстрая настройка за 15 секунд: укажите дни зарплаты и стартовый баланс';
+      } else {
+        badge.classList.add('hidden');
+        title.textContent = 'Персональные настройки';
+        sub.textContent = 'Индивидуальный график выплат, валюта и плановый доход';
+      }
+
+      document.getElementById('setPayoutMode').value = s.payoutMode || 'two_dates';
+      document.getElementById('setSalaryDay').value = Math.min(31, Math.max(1, Number(s.salaryDay) || 10));
+      document.getElementById('setAdvanceDay').value = Math.min(31, Math.max(1, Number(s.advanceDay) || 25));
+      document.getElementById('setIncomeGoal').value = Number(s.monthlyIncomeGoal) || 100000;
+      document.getElementById('setCurrency').value = s.currency || '₽';
+      document.getElementById('setCashWindow').value = s.cashWindow || '';
+      if (initBalInput) initBalInput.value = '';
+
+      updateSettingsFieldsVisibility();
+      document.getElementById('settingsModal').classList.remove('hidden');
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').classList.add('hidden');
+    }
+
+    async function saveUserSettings(e) {
+      e.preventDefault();
+      const payoutMode = document.getElementById('setPayoutMode').value || 'two_dates';
+      const salaryDay = Math.min(31, Math.max(1, Number(document.getElementById('setSalaryDay').value) || 10));
+      const advanceDay = Math.min(31, Math.max(1, Number(document.getElementById('setAdvanceDay').value) || 25));
+      const monthlyIncomeGoal = Math.max(0, Number(document.getElementById('setIncomeGoal').value) || 100000);
+      const currency = document.getElementById('setCurrency').value || '₽';
+      const cashWindow = document.getElementById('setCashWindow').value.replace(/[<>]/g, '').trim().slice(0, 45);
+      const initialBalanceRaw = Number(document.getElementById('setInitialBalance').value || 0);
+
+      appData.settings = {
+        ...(appData.settings || {}),
+        payoutMode,
+        salaryDay,
+        advanceDay,
+        paydayDay: advanceDay,
+        monthlyIncomeGoal,
+        currency,
+        cashWindow
+      };
+
+      if (!isNaN(initialBalanceRaw) && initialBalanceRaw > 0) {
+        appData.transactions = appData.transactions || [];
+        appData.transactions.unshift({
+          id: 't_init_' + Date.now(),
+          type: 'income',
+          amount: Math.abs(initialBalanceRaw),
+          category: 'Начальный остаток',
+          title: 'Стартовый баланс на руках / карте',
+          date: new Date().toISOString()
+        });
+      }
+
+      if (useBackend && currentSession) {
+        try {
+          await fetch('/api/settings', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + currentSession.token
+            },
+            body: JSON.stringify({
+              settings: appData.settings,
+              initialBalance: initialBalanceRaw > 0 ? initialBalanceRaw : 0
+            })
+          });
+        } catch (err) {}
+      }
+
+      saveCurrentUserProfileLocal(appData);
+      closeSettingsModal();
+      renderAll(appData, calculateAnalyticsClient(appData));
     }
 
     function getBankBrandStyle(name) {
@@ -1439,7 +1693,7 @@
             break;
           }
         }
-        const titleClean = part.replace(numMatch[0], '').replace(/[₽рp.<>]+/gi, '').trim().slice(0, 80) || category;
+        const titleClean = part.replace(numMatch[0], '').replace(/[₽$€₸рp.<>]+/gi, '').trim().slice(0, 80) || category;
         const title = titleClean.charAt(0).toUpperCase() + titleClean.slice(1);
         results.push({
           id: 't_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
@@ -1503,22 +1757,53 @@
       }).sort((a, b) => a.daysUntil - b.daysUntil);
 
       const freeMoneyAfterCredits = netBalance - unpaidCreditReserve;
+
+      // Dynamic per-user payout schedule calculation
+      const s = (data && data.settings) || {};
+      const payoutMode = s.payoutMode || 'two_dates';
+      const salaryDay = Math.min(31, Math.max(1, Number(s.salaryDay) || 10));
+      const advanceDay = Math.min(31, Math.max(1, Number(s.advanceDay) || 25));
+      const note = s.cashWindow ? ` (${s.cashWindow})` : '';
+
       let daysToPayday = 1;
-      let nextPaydayTitle = '25-го числа (Аванс)';
-      if (currentDay < 10) {
-        daysToPayday = 10 - currentDay;
-        nextPaydayTitle = '10-го числа (ЗП + нал)';
-      } else if (currentDay < 25) {
-        daysToPayday = 25 - currentDay;
-        nextPaydayTitle = '25-го числа (Аванс)';
+      let nextPaydayTitle = '';
+
+      if (payoutMode === 'flexible') {
+        daysToPayday = Math.max(1, (daysInMonth - currentDay) + 1);
+        nextPaydayTitle = 'Конец месяца (Свободный график)';
+      } else if (payoutMode === 'one_date') {
+        if (currentDay < salaryDay) {
+          daysToPayday = salaryDay - currentDay;
+        } else if (currentDay === salaryDay) {
+          daysToPayday = 1;
+        } else {
+          daysToPayday = (daysInMonth - currentDay) + salaryDay;
+        }
+        nextPaydayTitle = `${salaryDay}-го числа (ЗП${note})`;
       } else {
-        daysToPayday = (daysInMonth - currentDay) + 10;
-        nextPaydayTitle = '10-го числа (ЗП + нал)';
+        const events = [
+          { day: salaryDay, label: `${salaryDay}-го числа (ЗП${note})` },
+          { day: advanceDay, label: `${advanceDay}-го числа (Аванс)` }
+        ].sort((a, b) => a.day - b.day);
+
+        const upcoming = events.find(ev => ev.day > currentDay);
+        const todayMatch = events.find(ev => ev.day === currentDay);
+
+        if (todayMatch) {
+          daysToPayday = 1;
+          nextPaydayTitle = `Сегодня • ${todayMatch.label}`;
+        } else if (upcoming) {
+          daysToPayday = upcoming.day - currentDay;
+          nextPaydayTitle = upcoming.label;
+        } else {
+          daysToPayday = (daysInMonth - currentDay) + events[0].day;
+          nextPaydayTitle = events[0].label;
+        }
       }
 
       const safeDailyLimit = Math.max(0, Math.round(freeMoneyAfterCredits / Math.max(1, daysToPayday)));
-      const baseIncome = Math.max(totalIncome, (data.settings && data.settings.monthlyIncomeGoal) || 150000);
-      const dtiPercent = Math.round((totalMonthlyCreditPayment / baseIncome) * 100);
+      const baseIncome = Math.max(totalIncome, Number(s.monthlyIncomeGoal) || 100000);
+      const dtiPercent = Math.round((totalMonthlyCreditPayment / Math.max(1, baseIncome)) * 100);
 
       return {
         totalIncome,
@@ -1549,7 +1834,7 @@
           const json = await res.json();
           useBackend = true;
           saveCurrentUserProfileLocal(json.data);
-          renderAll(json.data, json.analytics);
+          renderAll(json.data, calculateAnalyticsClient(json.data));
           if (currentSession.role === 'admin') loadAdminOverview();
           return;
         }
@@ -1570,16 +1855,21 @@
     }
 
     function renderAll(data, analytics) {
+      const schedSub = document.getElementById('headerScheduleSub');
+      if (schedSub) {
+        schedSub.textContent = formatScheduleSubtitle(data.settings);
+      }
+
       const freeEl = document.getElementById('kpiFreeMoney');
       freeEl.textContent = fmt(analytics.freeMoneyAfterCredits);
-      freeEl.className = `text-[36px] sm:text-[42px] font-bold tracking-tight tabular-nums mt-1 leading-none ${
+      freeEl.className = `text-[36px] sm:text-[42px] font-bold tracking-tight tabular-nums mt-1.5 leading-none ${
         analytics.freeMoneyAfterCredits < 0 ? 'text-[#FF453A]' : 'text-white'
       }`;
 
       document.getElementById('kpiNetBalance').textContent = fmt(analytics.netBalance);
       document.getElementById('kpiReserveSub').textContent = `Резерв кредитов: ${fmt(analytics.unpaidCreditReserve)}`;
       document.getElementById('kpiSafeDaily').textContent = fmt(analytics.safeDailyLimit) + '/дн';
-      document.getElementById('kpiDaysToPayday').textContent = `До выплаты ${analytics.daysToPayday} дн. • ${analytics.nextPaydayTitle || '25-го'}`;
+      document.getElementById('kpiDaysToPayday').textContent = `До выплаты ${analytics.daysToPayday} дн. • ${analytics.nextPaydayTitle}`;
 
       document.getElementById('kpiIncome').textContent = '+' + fmt(analytics.totalIncome);
       document.getElementById('kpiExpense').textContent = '-' + fmt(analytics.totalExpense);
@@ -1607,10 +1897,68 @@
         banner.classList.add('hidden');
       }
 
+      renderOverviewCompactWidgets(data.transactions || [], analytics.creditsEnriched || []);
       renderCredits(analytics.creditsEnriched);
       renderTransactions(data.transactions || []);
       renderCharts(data, analytics);
       updatePayoffSimulator();
+    }
+
+    function renderOverviewCompactWidgets(transactions, credits) {
+      const recentTxEl = document.getElementById('overviewRecentTransactions');
+      if (recentTxEl) {
+        if (!transactions.length) {
+          recentTxEl.innerHTML = `<div class="py-4 text-center text-[#8E8E93]">Пока нет операций. Введите трату или доход в строку выше.</div>`;
+        } else {
+          recentTxEl.innerHTML = transactions.slice(0, 3).map(t => {
+            const isInc = t.type === 'income';
+            const d = new Date(t.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+            return `
+              <div class="py-2.5 flex items-center justify-between gap-2">
+                <div class="min-w-0">
+                  <div class="font-medium text-white truncate">${escapeHtml(t.title)}</div>
+                  <div class="text-[11px] text-[#8E8E93]">${escapeHtml(t.category)} • ${d}</div>
+                </div>
+                <span class="font-semibold tabular-nums shrink-0 ${isInc ? 'text-[#30D158]' : 'text-white'}">
+                  ${isInc ? '+' : '−'}${fmt(t.amount)}
+                </span>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      const nextCrEl = document.getElementById('overviewNextCredits');
+      if (nextCrEl) {
+        if (!credits.length) {
+          nextCrEl.innerHTML = `
+            <div class="py-4 text-center text-[#8E8E93] space-y-2">
+              <div>У вас нет добавленных кредитов</div>
+              <button onclick="switchTab('credits'); toggleAddCreditForm();" class="px-3 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/10 text-white text-[11px] font-medium transition cursor-pointer">
+                + Добавить кредит или рассрочку
+              </button>
+            </div>
+          `;
+        } else {
+          nextCrEl.innerHTML = credits.slice(0, 2).map(c => {
+            const statusText = c.paidThisMonth
+              ? `<span class="text-[#30D158]">Оплачен</span>`
+              : `<span class="${c.daysUntil <= 5 ? 'text-[#FF453A]' : 'text-[#FF9F0A]'}">Через ${c.daysUntil} дн. (${c.paymentDay}-го)</span>`;
+            return `
+              <div class="p-2.5 rounded-xl bg-[#1C1C21] border border-white/[0.05] flex items-center justify-between gap-2">
+                <div class="min-w-0">
+                  <div class="font-medium text-white truncate">${escapeHtml(c.name)}</div>
+                  <div class="text-[11px] text-[#8E8E93] tabular-nums">${statusText} • Остаток ${fmt(c.totalDebt)}</div>
+                </div>
+                <div class="text-right shrink-0">
+                  <div class="font-semibold text-white tabular-nums">${fmt(c.monthlyPayment)}</div>
+                  <div class="text-[10px] text-[#8E8E93]">в месяц</div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
     }
 
     function renderCredits(credits) {

@@ -56,10 +56,11 @@ function getCleanUserProfile() {
   return {
     settings: {
       currency: '₽',
+      payoutMode: 'two_dates',
       paydayDay: 25,
       salaryDay: 10,
       advanceDay: 25,
-      cashWindow: '10–15 числа',
+      cashWindow: '',
       monthlyIncomeGoal: 100000
     },
     transactions: [],
@@ -336,7 +337,7 @@ function parseSmartInput(rawText) {
       }
     }
 
-    const titleClean = sanitizeText(part.replace(numMatch[0], '').replace(/[₽рp.]+/gi, '').trim() || category, 80);
+    const titleClean = sanitizeText(part.replace(numMatch[0], '').replace(/[₽$€₸рp.]+/gi, '').trim() || category, 80);
     const title = titleClean ? titleClean.charAt(0).toUpperCase() + titleClean.slice(1) : category;
 
     results.push({
@@ -403,22 +404,52 @@ function calculateAnalytics(profile) {
   }).sort((a, b) => a.daysUntil - b.daysUntil);
 
   const freeMoneyAfterCredits = netBalance - unpaidCreditReserve;
+
+  const s = (profile && profile.settings) || {};
+  const payoutMode = s.payoutMode || 'two_dates';
+  const salaryDay = Math.min(31, Math.max(1, Number(s.salaryDay) || 10));
+  const advanceDay = Math.min(31, Math.max(1, Number(s.advanceDay) || 25));
+  const note = s.cashWindow ? ` (${s.cashWindow})` : '';
+
   let daysToPayday = 1;
-  let nextPaydayTitle = '25-го числа (Аванс)';
-  if (currentDay < 10) {
-    daysToPayday = 10 - currentDay;
-    nextPaydayTitle = '10-го числа (ЗП + нал)';
-  } else if (currentDay < 25) {
-    daysToPayday = 25 - currentDay;
-    nextPaydayTitle = '25-го числа (Аванс)';
+  let nextPaydayTitle = '';
+
+  if (payoutMode === 'flexible') {
+    daysToPayday = Math.max(1, (daysInMonth - currentDay) + 1);
+    nextPaydayTitle = 'Конец месяца (Свободный график)';
+  } else if (payoutMode === 'one_date') {
+    if (currentDay < salaryDay) {
+      daysToPayday = salaryDay - currentDay;
+    } else if (currentDay === salaryDay) {
+      daysToPayday = 1;
+    } else {
+      daysToPayday = (daysInMonth - currentDay) + salaryDay;
+    }
+    nextPaydayTitle = `${salaryDay}-го числа (ЗП${note})`;
   } else {
-    daysToPayday = (daysInMonth - currentDay) + 10;
-    nextPaydayTitle = '10-го числа (ЗП + нал)';
+    const events = [
+      { day: salaryDay, label: `${salaryDay}-го числа (ЗП${note})` },
+      { day: advanceDay, label: `${advanceDay}-го числа (Аванс)` }
+    ].sort((a, b) => a.day - b.day);
+
+    const upcoming = events.find(ev => ev.day > currentDay);
+    const todayMatch = events.find(ev => ev.day === currentDay);
+
+    if (todayMatch) {
+      daysToPayday = 1;
+      nextPaydayTitle = `Сегодня • ${todayMatch.label}`;
+    } else if (upcoming) {
+      daysToPayday = upcoming.day - currentDay;
+      nextPaydayTitle = upcoming.label;
+    } else {
+      daysToPayday = (daysInMonth - currentDay) + events[0].day;
+      nextPaydayTitle = events[0].label;
+    }
   }
 
   const safeDailyLimit = Math.max(0, Math.round(freeMoneyAfterCredits / Math.max(1, daysToPayday)));
-  const baseIncome = Math.max(totalIncome, (profile.settings && profile.settings.monthlyIncomeGoal) || 150000);
-  const dtiPercent = Math.round((totalMonthlyCreditPayment / baseIncome) * 100);
+  const baseIncome = Math.max(totalIncome, Number(s.monthlyIncomeGoal) || 100000);
+  const dtiPercent = Math.round((totalMonthlyCreditPayment / Math.max(1, baseIncome)) * 100);
 
   return {
     totalIncome,
@@ -790,6 +821,56 @@ const server = http.createServer((req, res) => {
             paidThisMonth: false
           });
         }
+        saveDb(db);
+        const analytics = calculateAnalytics(user.profile);
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        return res.end(JSON.stringify({ ok: true, data: user.profile, analytics }));
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
+        return res.end(JSON.stringify({ ok: false, error: e.message }));
+      }
+    });
+  }
+
+  // 5b. SETTINGS: Update personal payout schedule, currency, income goal, and optional initial balance
+  if (pathname === '/api/settings' && req.method === 'POST') {
+    const db = loadDb();
+    const user = getAuthenticatedUser(req, db, parsedUrl);
+    if (!user) {
+      res.writeHead(401, { 'Content-Type': 'application/json; charset=utf-8' });
+      return res.end(JSON.stringify({ ok: false, error: 'Требуется авторизация' }));
+    }
+    return readBodySafe(req, res, db, ip, body => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        const s = payload.settings || {};
+        const allowedModes = ['two_dates', 'one_date', 'flexible'];
+        const allowedCurrencies = ['₽', '$', '€', '₸'];
+
+        user.profile.settings = {
+          ...(user.profile.settings || {}),
+          payoutMode: allowedModes.includes(s.payoutMode) ? s.payoutMode : 'two_dates',
+          salaryDay: Math.min(31, Math.max(1, Number(s.salaryDay) || 10)),
+          advanceDay: Math.min(31, Math.max(1, Number(s.advanceDay) || 25)),
+          paydayDay: Math.min(31, Math.max(1, Number(s.advanceDay) || 25)),
+          monthlyIncomeGoal: Math.max(0, Number(s.monthlyIncomeGoal) || 100000),
+          currency: allowedCurrencies.includes(s.currency) ? s.currency : '₽',
+          cashWindow: sanitizeText(s.cashWindow || '', 45)
+        };
+
+        const initBal = Number(payload.initialBalance || 0);
+        if (!isNaN(initBal) && initBal > 0 && initBal <= 1e9) {
+          user.profile.transactions = user.profile.transactions || [];
+          user.profile.transactions.unshift({
+            id: 't_init_' + Date.now(),
+            type: 'income',
+            amount: Math.abs(initBal),
+            category: 'Начальный остаток',
+            title: 'Стартовый баланс на руках / карте',
+            date: new Date().toISOString()
+          });
+        }
+
         saveDb(db);
         const analytics = calculateAnalytics(user.profile);
         res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
