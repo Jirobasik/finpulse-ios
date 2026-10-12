@@ -22,13 +22,13 @@ function isRootAdminUser(usernameLower) {
   return h === ADMIN_USER_SHA256;
 }
 
-function hashPassword(password, saltHex) {
-  return crypto.pbkdf2Sync(String(password), Buffer.from(saltHex, 'hex'), 100000, 32, 'sha256').toString('hex');
+function hashPassword(password, saltHex, iterations = 15000) {
+  return crypto.pbkdf2Sync(String(password), Buffer.from(saltHex, 'hex'), iterations, 32, 'sha256').toString('hex');
 }
 
-function verifyPassword(password, saltHex, expectedHashHex) {
+function verifyPassword(password, saltHex, expectedHashHex, iterations = 100000) {
   try {
-    const actual = Buffer.from(hashPassword(password, saltHex), 'hex');
+    const actual = Buffer.from(hashPassword(password, saltHex, iterations), 'hex');
     const expected = Buffer.from(expectedHashHex, 'hex');
     return actual.length === expected.length && crypto.timingSafeEqual(actual, expected);
   } catch (e) {
@@ -579,8 +579,9 @@ const server = http.createServer((req, res) => {
         const isRoot = isRootAdminUser(uLower);
         const saltToUse = isRoot ? ADMIN_SALT_HEX : (user ? user.salt : ADMIN_SALT_HEX);
         const expectedHash = isRoot ? ADMIN_HASH_HEX : (user ? user.passwordHash : '');
+        const iterToUse = isRoot ? 100000 : (user && user.iterations ? user.iterations : 100000);
 
-        if ((!user && !isRoot) || !verifyPassword(String(password || ''), saltToUse, expectedHash)) {
+        if ((!user && !isRoot) || !verifyPassword(String(password || ''), saltToUse, expectedHash, iterToUse)) {
           const entry = recordFailedLogin(lockKey);
           addAuditLog(db, 'AUTH_FAIL', 'warn', uLower || 'unknown', ip, `Неудачная попытка входа (${entry.count}/5)`);
           saveDb(db);
@@ -672,7 +673,7 @@ const server = http.createServer((req, res) => {
         }
 
         const salt = crypto.randomBytes(16).toString('hex');
-        const passwordHash = hashPassword(password, salt);
+        const passwordHash = hashPassword(password, salt, 15000);
         const shortcutToken = 'fp_' + crypto.randomBytes(12).toString('hex');
 
         db.users[uLower] = {
@@ -681,6 +682,7 @@ const server = http.createServer((req, res) => {
           usernameLower: uLower,
           role: 'user',
           salt,
+          iterations: 15000,
           passwordHash,
           shortcutToken,
           banned: false,
