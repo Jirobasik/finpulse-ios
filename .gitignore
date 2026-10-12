@@ -1,0 +1,8 @@
+node_modules/
+users-db.json
+data.json
+*.ics
+*.shortcut
+.env
+*.log
+.DS_Store

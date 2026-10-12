@@ -1,0 +1,12 @@
+{
+  "name": "finpulse-ios",
+  "version": "1.0.0",
+  "description": "FinPulse iOS Financial Automation Hub with Apple Shortcuts, Multi-User Auth & Admin Security Center",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

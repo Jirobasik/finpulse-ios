@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: finpulse-ios
+    runtime: node
+    plan: free
+    buildCommand: echo "No build needed"
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production

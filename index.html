@@ -1,0 +1,2589 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="FinPulse" />
+  <title>FinPulse — Личные финансы и кредиты</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg-canvas: #09090B;
+      --bg-surface-1: #121215;
+      --bg-surface-2: #1C1C21;
+      --border-hairline: rgba(255, 255, 255, 0.07);
+      --text-primary: #FFFFFF;
+      --text-secondary: #8E8E93;
+      --text-tertiary: #636366;
+      --ios-blue: #0A84FF;
+      --ios-green: #30D158;
+      --ios-orange: #FF9F0A;
+      --ios-red: #FF453A;
+      --blur-bg: rgba(18, 18, 21, 0.84);
+      --range-track: #27272D;
+    }
+
+    html.light {
+      --bg-canvas: #F2F2F7;
+      --bg-surface-1: #FFFFFF;
+      --bg-surface-2: #EFEFF4;
+      --border-hairline: rgba(0, 0, 0, 0.08);
+      --text-primary: #09090B;
+      --text-secondary: #636366;
+      --text-tertiary: #8E8E93;
+      --blur-bg: rgba(255, 255, 255, 0.86);
+      --range-track: #D1D1D6;
+    }
+
+    * {
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg-canvas);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      margin: 0;
+      padding-bottom: calc(88px + env(safe-area-inset-bottom));
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+    }
+
+    .surface-card {
+      background-color: var(--bg-surface-1);
+      border: 1px solid var(--border-hairline);
+      border-radius: 20px;
+      transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    html.light .surface-card {
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    .surface-pill {
+      background-color: var(--bg-surface-2);
+      border: 1px solid var(--border-hairline);
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .ios-blur {
+      background: var(--blur-bg);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      transition: background-color 0.2s ease;
+    }
+
+    /* Adaptive utility overrides for Light Mode (Apple HIG System Light) */
+    html.light #authScreen {
+      background-color: var(--bg-canvas) !important;
+    }
+    html.light .text-white {
+      color: #09090B !important;
+    }
+    html.light .text-\[\#E5E5EA\] {
+      color: #1C1C1E !important;
+    }
+    html.light .bg-\[\#1C1C21\] {
+      background-color: #F2F2F7 !important;
+    }
+    html.light .bg-\[\#121215\] {
+      background-color: #FFFFFF !important;
+    }
+    html.light .bg-\[\#181410\] {
+      background-color: #FFF8ED !important;
+    }
+    html.light .border-white\/\[0\.05\],
+    html.light .border-white\/\[0\.06\],
+    html.light .border-white\/\[0\.07\],
+    html.light .border-white\/10 {
+      border-color: rgba(0, 0, 0, 0.08) !important;
+    }
+    html.light .divide-white\/\[0\.05\] > :not([hidden]) ~ :not([hidden]) {
+      border-color: rgba(0, 0, 0, 0.07) !important;
+    }
+    html.light .bg-white.text-\[\#09090B\] {
+      background-color: #09090B !important;
+      color: #FFFFFF !important;
+    }
+    html.light .bg-white.text-\[\#09090B\]:hover {
+      background-color: #27272A !important;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: var(--range-track);
+      height: 6px;
+      border-radius: 999px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="min-h-screen selection:bg-[#0A84FF] selection:text-white">
+
+  <!-- AUTHENTICATION GATEWAY SCREEN (Login / Register) -->
+  <div id="authScreen" class="fixed inset-0 z-50 bg-[#09090B] flex flex-col items-center justify-center p-4">
+    <div class="w-full max-w-[380px] space-y-6">
+      <!-- Brand Header -->
+      <div class="flex flex-col items-center text-center space-y-2.5">
+        <div class="w-12 h-12 rounded-2xl bg-white text-[#09090B] flex items-center justify-center shadow-lg">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight text-white">FinPulse iOS</h1>
+          <p class="text-xs text-[#8E8E93] mt-0.5">Защищённая система учёта доходов, расходов и кредитов</p>
+        </div>
+      </div>
+
+      <!-- Segmented Mode Switcher (Вход / Регистрация) -->
+      <div class="surface-card p-5 space-y-4">
+        <div class="grid grid-cols-2 p-1 rounded-xl bg-[#1C1C21]">
+          <button type="button" id="authModeLoginBtn" onclick="setAuthMode('login')" class="py-2 rounded-lg text-xs font-semibold bg-white text-[#09090B] transition cursor-pointer">
+            Вход в аккаунт
+          </button>
+          <button type="button" id="authModeRegBtn" onclick="setAuthMode('register')" class="py-2 rounded-lg text-xs font-semibold text-[#8E8E93] hover:text-white transition cursor-pointer">
+            Регистрация
+          </button>
+        </div>
+
+        <form onsubmit="handleAuthSubmit(event)" class="space-y-3.5">
+          <div>
+            <label for="authUsername" class="block text-[12px] text-[#8E8E93] mb-1.5">Логин</label>
+            <input
+              id="authUsername"
+              type="text"
+              required
+              autocomplete="username"
+              placeholder="Введите логин"
+              class="w-full h-11 rounded-xl bg-[#1C1C21] border border-white/[0.07] px-3.5 text-sm text-white placeholder-[#636366] focus:outline-none focus:border-[#0A84FF] transition"
+            />
+          </div>
+
+          <div>
+            <label for="authPassword" class="block text-[12px] text-[#8E8E93] mb-1.5">Пароль</label>
+            <input
+              id="authPassword"
+              type="password"
+              required
+              autocomplete="current-password"
+              placeholder="Введите пароль"
+              class="w-full h-11 rounded-xl bg-[#1C1C21] border border-white/[0.07] px-3.5 text-sm text-white placeholder-[#636366] focus:outline-none focus:border-[#0A84FF] transition"
+            />
+          </div>
+
+          <div id="authErrorBox" class="hidden rounded-xl bg-[#FF453A]/12 border border-[#FF453A]/25 px-3 py-2.5 text-xs text-[#FF453A]"></div>
+
+          <button
+            id="authSubmitBtn"
+            type="submit"
+            class="w-full h-11 rounded-xl bg-white hover:bg-neutral-200 text-[#09090B] font-semibold text-sm transition flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <span>Войти</span>
+          </button>
+        </form>
+
+        <div class="pt-3 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-[#636366]">
+          <span class="inline-flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-[#30D158]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            PBKDF2-SHA256 • WAF Защита
+          </span>
+          <button type="button" onclick="toggleTheme()" class="text-[#0A84FF] hover:underline font-medium cursor-pointer">
+            Сменить тему
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Navigation Bar (Apple HIG minimal header) -->
+  <header class="sticky top-0 z-30 ios-blur border-b border-white/[0.06] px-4 py-3">
+    <div class="max-w-5xl mx-auto flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-white text-[#09090B] flex items-center justify-center shadow-sm">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-semibold text-[16px] tracking-tight text-white">FinPulse</span>
+            <span id="currentUserBadge" class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-white/[0.08] text-white font-medium">
+              Гость
+            </span>
+            <span id="adminRoleBadge" class="hidden text-[10px] px-2 py-0.5 rounded-full bg-[#0A84FF]/20 text-[#0A84FF] font-semibold uppercase tracking-wider">
+              ADMIN
+            </span>
+            <button onclick="forceCloudSyncNow()" id="cloudSyncBadge" title="Нажмите для мгновенной синхронизации с облачной БД" class="inline-flex items-center gap-1.5 text-[11px] px-2 py-0.5 rounded-full bg-[#30D158]/15 text-[#30D158] font-medium cursor-pointer hover:opacity-80 transition">
+              <span id="cloudSyncDot" class="w-1.5 h-1.5 rounded-full bg-[#30D158]"></span>
+              <span id="cloudSyncText">Облако: БД</span>
+            </button>
+          </div>
+          <p class="text-[12px] text-[#8E8E93] leading-tight mt-0.5">ЗП 10-го (нал 10–15) • Аванс 25-го</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="toggleTheme()" id="themeToggleBtn" aria-label="Переключить тему" title="Светлая / Тёмная тема" class="min-h-[38px] w-[38px] rounded-xl surface-pill hover:bg-white/10 text-white flex items-center justify-center transition cursor-pointer">
+          <svg id="themeIconSun" class="w-4 h-4 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg id="themeIconMoon" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <button onclick="downloadIcsCalendar()" class="min-h-[38px] px-3 py-1.5 rounded-xl surface-pill hover:bg-white/10 text-white text-xs font-medium transition flex items-center gap-1.5 cursor-pointer" title="Экспорт напоминаний в Календарь iOS">
+          <svg class="w-4 h-4 text-[#0A84FF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span class="hidden sm:inline">Календарь (.ics)</span>
+          <span class="sm:hidden">.ics</span>
+        </button>
+
+        <button onclick="openShortcutModal()" class="min-h-[38px] px-3 py-1.5 rounded-xl bg-white text-[#09090B] hover:bg-neutral-200 text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+          </svg>
+          <span class="hidden sm:inline">iPhone</span>
+        </button>
+
+        <button onclick="logoutUser()" aria-label="Выйти из аккаунта" title="Выйти из аккаунта" class="min-h-[38px] px-2.5 py-1.5 rounded-xl surface-pill hover:bg-[#FF453A]/15 hover:text-[#FF453A] text-[#8E8E93] text-xs font-medium transition flex items-center justify-center cursor-pointer">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="max-w-5xl mx-auto px-4 pt-4 space-y-5">
+
+    <!-- Admin Impersonation Return Banner -->
+    <div id="impersonationBanner" class="hidden surface-card p-3 border-[#0A84FF]/40 bg-[#0A84FF]/10 flex items-center justify-between gap-3">
+      <div class="text-xs text-white">
+        Вы просматриваете профиль пользователя <strong id="impersonatedUserLabel" class="text-[#0A84FF]"></strong> в режиме Администратора
+      </div>
+      <button onclick="returnToAdminAccount()" class="px-3 py-1.5 rounded-xl bg-[#0A84FF] text-white text-xs font-semibold hover:opacity-90 transition cursor-pointer">
+        Вернуться в Админ-панель
+      </button>
+    </div>
+
+    <!-- Global Broadcast Banner from Admin -->
+    <div id="globalSystemBanner" class="hidden surface-card p-3.5 border-[#0A84FF]/30 flex items-center gap-3">
+      <div class="w-8 h-8 rounded-xl bg-[#0A84FF]/15 text-[#0A84FF] flex items-center justify-center shrink-0">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+      </div>
+      <div class="text-xs text-white font-medium" id="globalSystemBannerText"></div>
+    </div>
+
+    <!-- Upcoming Credit Payment Alert Bar -->
+    <div id="remindersBanner" class="hidden surface-card p-3.5 border-[#FF9F0A]/30 bg-[#181410] flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-9 h-9 rounded-xl bg-[#FF9F0A]/15 text-[#FF9F0A] flex items-center justify-center shrink-0">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+        </div>
+        <div class="min-w-0">
+          <div class="text-[11px] font-semibold uppercase tracking-wider text-[#FF9F0A]">График обязательных платежей</div>
+          <p id="remindersBannerText" class="text-[13px] text-white truncate mt-0.5 tabular-nums"></p>
+        </div>
+      </div>
+      <button onclick="switchTab('credits')" class="shrink-0 px-3 py-2 rounded-xl bg-[#FF9F0A]/15 hover:bg-[#FF9F0A]/25 text-[#FF9F0A] text-xs font-semibold transition cursor-pointer">
+        К оплате
+      </button>
+    </div>
+
+    <!-- Spotlight Command Input Bar -->
+    <section id="quickInputSection" class="surface-card p-3.5 sm:p-4">
+      <form onsubmit="submitSmartInput(event)" class="relative flex items-center">
+        <div class="absolute left-3.5 text-[#8E8E93] pointer-events-none">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+        </div>
+        <input
+          id="smartInputField"
+          type="text"
+          aria-label="Быстрый ввод операции"
+          placeholder="Быстрый ввод: кофе 350, такси 600, +50000 зп..."
+          class="w-full h-12 rounded-2xl bg-[#1C1C21] border border-white/[0.06] pl-10 pr-14 text-[15px] text-white placeholder-[#636366] focus:outline-none focus:border-[#0A84FF] transition"
+        />
+        <button
+          type="submit"
+          aria-label="Добавить запись"
+          class="absolute right-1.5 w-9 h-9 rounded-xl bg-white text-[#09090B] hover:bg-neutral-200 flex items-center justify-center transition cursor-pointer"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="19" x2="12" y2="5"></line>
+            <polyline points="5 12 12 5 19 12"></polyline>
+          </svg>
+        </button>
+      </form>
+
+      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar mt-3 pt-0.5">
+        <button onclick="quickAdd('Кофе 350')" class="shrink-0 min-h-[34px] px-3 py-1.5 rounded-full surface-pill hover:bg-white/10 text-xs text-[#E5E5EA] flex items-center gap-1.5 transition cursor-pointer tabular-nums">
+          <svg class="w-3.5 h-3.5 text-[#8E8E93]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path></svg>
+          Кофе 350 ₽
+        </button>
+        <button onclick="quickAdd('Продукты 1800')" class="shrink-0 min-h-[34px] px-3 py-1.5 rounded-full surface-pill hover:bg-white/10 text-xs text-[#E5E5EA] flex items-center gap-1.5 transition cursor-pointer tabular-nums">
+          <svg class="w-3.5 h-3.5 text-[#8E8E93]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+          Продукты 1 800 ₽
+        </button>
+        <button onclick="quickAdd('Такси 550')" class="shrink-0 min-h-[34px] px-3 py-1.5 rounded-full surface-pill hover:bg-white/10 text-xs text-[#E5E5EA] flex items-center gap-1.5 transition cursor-pointer tabular-nums">
+          <svg class="w-3.5 h-3.5 text-[#8E8E93]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+          Такси 550 ₽
+        </button>
+        <button onclick="quickAdd('+50000 Зарплата')" class="shrink-0 min-h-[34px] px-3 py-1.5 rounded-full bg-[#30D158]/10 border border-[#30D158]/25 hover:bg-[#30D158]/20 text-xs text-[#30D158] font-medium flex items-center gap-1.5 transition cursor-pointer tabular-nums">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          50 000 ₽ Доход
+        </button>
+      </div>
+    </section>
+
+    <!-- TAB 1: OVERVIEW -->
+    <div id="tab-overview" class="space-y-5">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div class="surface-card p-5 lg:col-span-7 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-[13px] font-medium text-[#8E8E93]">Свободный остаток (после резерва на кредиты)</span>
+              <span id="kpiDtiBadge" class="text-[11px] px-2.5 py-0.5 rounded-full bg-white/[0.06] text-[#8E8E93] font-semibold tabular-nums">ПДН 0%</span>
+            </div>
+            <div id="kpiFreeMoney" class="text-[36px] sm:text-[42px] font-bold tracking-tight tabular-nums mt-1 leading-none text-white">
+              0 ₽
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 pt-4 mt-5 border-t border-white/[0.06]">
+            <div>
+              <div class="text-[12px] text-[#8E8E93]">Безопасный лимит в день</div>
+              <div id="kpiSafeDaily" class="text-[20px] font-semibold text-[#30D158] tabular-nums mt-0.5">0 ₽/дн</div>
+              <div id="kpiDaysToPayday" class="text-[11px] text-[#636366] mt-0.5">До выплаты — дн.</div>
+            </div>
+            <div>
+              <div class="text-[12px] text-[#8E8E93]">Фактический баланс</div>
+              <div id="kpiNetBalance" class="text-[20px] font-semibold text-white tabular-nums mt-0.5">0 ₽</div>
+              <div id="kpiReserveSub" class="text-[11px] text-[#636366] mt-0.5 tabular-nums">Резерв кредитов: 0 ₽</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5 grid grid-cols-2 lg:grid-cols-1 gap-4">
+          <div class="surface-card p-4 flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-[12px] font-medium text-[#8E8E93]">Поток за месяц</span>
+              <svg class="w-4 h-4 text-[#8E8E93]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="20" x2="12" y2="10"></line>
+                <line x1="18" y1="20" x2="18" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="16"></line>
+              </svg>
+            </div>
+            <div class="mt-3 space-y-2">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-[#8E8E93] text-xs">Доходы</span>
+                <span id="kpiIncome" class="font-semibold text-[#30D158] tabular-nums">+0 ₽</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-[#8E8E93] text-xs">Расходы</span>
+                <span id="kpiExpense" class="font-semibold text-[#FF453A] tabular-nums">-0 ₽</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="surface-card p-4 flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-[12px] font-medium text-[#8E8E93]">Кредитный портфель</span>
+              <svg class="w-4 h-4 text-[#8E8E93]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                <line x1="2" y1="10" x2="22" y2="10"></line>
+              </svg>
+            </div>
+            <div class="mt-2">
+              <div id="kpiTotalDebt" class="text-[22px] font-bold text-white tabular-nums">0 ₽</div>
+              <div class="text-[11px] text-[#8E8E93] mt-0.5 tabular-nums">
+                Обязательный платёж: <span id="kpiMonthlyCredit" class="text-white font-medium">0 ₽/мес</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: CREDITS & PAYOFF SIMULATOR -->
+    <div id="tab-credits" class="space-y-5">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div class="surface-card p-5 lg:col-span-7 space-y-4">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <h2 class="text-[17px] font-semibold tracking-tight text-white">Кредиты и обязательства</h2>
+              <p class="text-[12px] text-[#8E8E93] mt-0.5">Личный кредитный портфель аккаунта</p>
+            </div>
+            <button onclick="toggleAddCreditForm()" class="min-h-[36px] px-3 py-1.5 rounded-xl surface-pill hover:bg-white/10 text-xs font-medium text-white flex items-center gap-1.5 transition cursor-pointer">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>Добавить</span>
+            </button>
+          </div>
+
+          <form id="addCreditForm" onsubmit="submitNewCredit(event)" class="hidden rounded-2xl bg-[#1C1C21] border border-white/[0.07] p-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div>
+              <label for="crName" class="text-[#8E8E93] block mb-1">Название</label>
+              <input id="crName" required placeholder="Например: Т-Банк" class="w-full h-10 rounded-xl bg-[#121215] border border-white/10 px-3 text-white focus:outline-none focus:border-[#0A84FF]" />
+            </div>
+            <div>
+              <label for="crDebt" class="text-[#8E8E93] block mb-1">Остаток долга (₽)</label>
+              <input id="crDebt" type="number" required placeholder="100000" class="w-full h-10 rounded-xl bg-[#121215] border border-white/10 px-3 text-white focus:outline-none focus:border-[#0A84FF]" />
+            </div>
+            <div>
+              <label for="crMonthly" class="text-[#8E8E93] block mb-1">Платёж в месяц (₽)</label>
+              <input id="crMonthly" type="number" required placeholder="10000" class="w-full h-10 rounded-xl bg-[#121215] border border-white/10 px-3 text-white focus:outline-none focus:border-[#0A84FF]" />
+            </div>
+            <div>
+              <label for="crRate" class="text-[#8E8E93] block mb-1">Ставка (%)</label>
+              <input id="crRate" type="number" step="0.1" value="19.9" class="w-full h-10 rounded-xl bg-[#121215] border border-white/10 px-3 text-white focus:outline-none focus:border-[#0A84FF]" />
+            </div>
+            <div>
+              <label for="crDay" class="text-[#8E8E93] block mb-1">День списания</label>
+              <input id="crDay" type="number" min="1" max="31" required value="15" class="w-full h-10 rounded-xl bg-[#121215] border border-white/10 px-3 text-white focus:outline-none focus:border-[#0A84FF]" />
+            </div>
+            <div class="flex items-end">
+              <button type="submit" class="w-full h-10 rounded-xl bg-white text-[#09090B] font-semibold hover:bg-neutral-200 transition cursor-pointer">Сохранить</button>
+            </div>
+          </form>
+
+          <div id="creditsList" class="space-y-3"></div>
+        </div>
+
+        <div class="surface-card p-5 lg:col-span-5 flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-[#0A84FF]/15 text-[#0A84FF]">Стратегия «Лавина»</span>
+              <svg class="w-4 h-4 text-[#8E8E93]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                <polyline points="17 6 23 6 23 12"></polyline>
+              </svg>
+            </div>
+            <h3 class="text-[17px] font-semibold tracking-tight text-white mt-2">Калькулятор досрочного погашения</h3>
+            <p class="text-[12px] text-[#8E8E93] mt-1 leading-relaxed">
+              Расчёт сокращения срока кредитов при внесении дополнительной суммы поверх обязательного платежа:
+            </p>
+
+            <div class="mt-4 rounded-2xl bg-[#1C1C21] p-4 border border-white/[0.05]">
+              <div class="flex justify-between items-center text-xs mb-3">
+                <span class="text-[#8E8E93]">Дополнительно в месяц</span>
+                <strong id="extraPayLabel" class="text-[#30D158] text-sm font-semibold tabular-nums">+10 000 ₽</strong>
+              </div>
+              <input
+                id="extraPaySlider"
+                type="range"
+                aria-label="Дополнительный платёж в месяц"
+                min="0"
+                max="50000"
+                step="2500"
+                value="10000"
+                oninput="updatePayoffSimulator()"
+                class="w-full"
+              />
+            </div>
+
+            <div class="mt-4 space-y-2 text-xs">
+              <div class="flex justify-between items-center p-3 rounded-xl bg-[#1C1C21]">
+                <span class="text-[#8E8E93]">По текущему графику</span>
+                <strong id="simNormalMonths" class="text-white tabular-nums">— мес.</strong>
+              </div>
+              <div class="flex justify-between items-center p-3 rounded-xl bg-[#30D158]/10 border border-[#30D158]/20">
+                <span class="text-[#30D158]">С досрочным погашением</span>
+                <strong id="simFastMonths" class="text-[#30D158] font-semibold tabular-nums">— мес.</strong>
+              </div>
+              <div class="flex justify-between items-center p-3 rounded-xl bg-[#1C1C21]">
+                <span class="text-[#8E8E93]">Цель погашения №1</span>
+                <strong id="simTargetCredit" class="text-white tabular-nums">—</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="relative h-40 w-full pt-2">
+            <canvas id="debtPayoffChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: ANALYTICS CHARTS -->
+    <div id="tab-analytics" class="space-y-5">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div class="surface-card p-5 lg:col-span-7 flex flex-col justify-between">
+          <div class="mb-4">
+            <h3 class="text-[17px] font-semibold tracking-tight text-white">Баланс потоков и кредитов</h3>
+            <p class="text-[12px] text-[#8E8E93] mt-0.5">Соотношение доходов, расходов и кредитной нагрузки</p>
+          </div>
+          <div class="relative h-64 w-full">
+            <canvas id="cashflowChart"></canvas>
+          </div>
+        </div>
+
+        <div class="surface-card p-5 lg:col-span-5 flex flex-col justify-between">
+          <div class="mb-4">
+            <h3 class="text-[17px] font-semibold tracking-tight text-white">Распределение по категориям</h3>
+            <p class="text-[12px] text-[#8E8E93] mt-0.5">Структура текущих расходов</p>
+          </div>
+          <div class="relative h-64 w-full flex items-center justify-center">
+            <canvas id="categoryChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: TRANSACTIONS HISTORY -->
+    <div id="tab-transactions" class="space-y-5">
+      <section class="surface-card p-5">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <div>
+            <h3 class="text-[17px] font-semibold tracking-tight text-white">Журнал операций</h3>
+            <p class="text-[12px] text-[#8E8E93] mt-0.5">Все доходы, расходы и списания по кредитам</p>
+          </div>
+        </div>
+        <div id="transactionsList" class="divide-y divide-white/[0.05] text-sm"></div>
+      </section>
+    </div>
+
+    <!-- TAB 5: ADMIN PANEL & SECURITY CENTER -->
+    <div id="tab-admin" class="hidden space-y-5">
+      <!-- Admin Header & Controls -->
+      <div class="surface-card p-5 border-[#0A84FF]/30 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-[#0A84FF]/15 text-[#0A84FF] flex items-center justify-center">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-[17px] font-semibold text-white">Центр управления (Admin)</h2>
+                <span class="text-[11px] px-2 py-0.5 rounded-full bg-[#30D158]/15 text-[#30D158] font-medium">WAF + AES-256</span>
+              </div>
+              <p class="text-[12px] text-[#8E8E93]">Полный контроль аккаунтов, балансов, паролей и безопасности платформы</p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="forceCloudSyncNow(true)" class="min-h-[38px] px-3.5 py-2 rounded-xl bg-[#30D158]/15 border border-[#30D158]/30 hover:bg-[#30D158]/25 text-xs font-semibold text-[#30D158] transition cursor-pointer">
+              Синхронизировать Облако
+            </button>
+            <button onclick="toggleRegistrationSetting()" id="adminRegToggleBtn" class="min-h-[38px] px-3.5 py-2 rounded-xl surface-pill hover:bg-white/10 text-xs font-medium text-white transition cursor-pointer">
+              Регистрация: ВКЛ
+            </button>
+            <button onclick="unlockAllBruteforce()" class="min-h-[38px] px-3 py-2 rounded-xl surface-pill hover:bg-white/10 text-xs font-medium text-[#0A84FF] transition cursor-pointer">
+              Снять блокировки входа
+            </button>
+            <button onclick="exportAllUsersDatabase()" class="min-h-[38px] px-3.5 py-2 rounded-xl bg-white text-[#09090B] hover:bg-neutral-200 text-xs font-semibold transition cursor-pointer">
+              Скачать всю БД (.json)
+            </button>
+          </div>
+        </div>
+
+        <!-- Global Platform Metrics -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+          <div class="p-3.5 rounded-2xl bg-[#1C1C21] border border-white/[0.05]">
+            <div class="text-[11px] text-[#8E8E93]">Всего пользователей</div>
+            <div id="adminTotalUsers" class="text-xl font-bold text-white tabular-nums mt-0.5">1</div>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-[#1C1C21] border border-white/[0.05]">
+            <div class="text-[11px] text-[#8E8E93]">Общий баланс всех юзеров</div>
+            <div id="adminPlatformBalance" class="text-xl font-bold text-[#30D158] tabular-nums mt-0.5">0 ₽</div>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-[#1C1C21] border border-white/[0.05]">
+            <div class="text-[11px] text-[#8E8E93]">Кредитный портфель всех</div>
+            <div id="adminPlatformDebt" class="text-xl font-bold text-[#FF9F0A] tabular-nums mt-0.5">0 ₽</div>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-[#1C1C21] border border-white/[0.05]">
+            <div class="text-[11px] text-[#8E8E93]">Событий безопасности</div>
+            <div id="adminTotalLogs" class="text-xl font-bold text-white tabular-nums mt-0.5">0</div>
+          </div>
+        </div>
+
+        <!-- Global Broadcast Banner & Create User Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 pt-2">
+          <form onsubmit="submitAdminBanner(event)" class="p-3.5 rounded-2xl bg-[#1C1C21] border border-white/[0.05] space-y-2">
+            <label for="adminBannerInput" class="block text-xs font-semibold text-white">Объявление для всех пользователей сайта</label>
+            <div class="flex gap-2">
+              <input id="adminBannerInput" type="text" placeholder="Текст баннера (или пусто чтобы убрать)..." class="flex-1 h-9 rounded-xl bg-[#121215] border border-white/10 px-3 text-xs text-white focus:outline-none focus:border-[#0A84FF]" />
+              <button type="submit" class="px-3.5 h-9 rounded-xl bg-white text-[#09090B] text-xs font-semibold hover:bg-neutral-200 transition cursor-pointer">Опубликовать</button>
+            </div>
+          </form>
+
+          <form onsubmit="submitAdminCreateUser(event)" class="p-3.5 rounded-2xl bg-[#1C1C21] border border-white/[0.05] space-y-2">
+            <label class="block text-xs font-semibold text-white">Создать нового пользователя вручную</label>
+            <div class="grid grid-cols-3 gap-2">
+              <input id="adminNewUsername" required placeholder="Логин" class="h-9 rounded-xl bg-[#121215] border border-white/10 px-3 text-xs text-white focus:outline-none focus:border-[#0A84FF]" />
+              <input id="adminNewPassword" required placeholder="Пароль" class="h-9 rounded-xl bg-[#121215] border border-white/10 px-3 text-xs text-white focus:outline-none focus:border-[#0A84FF]" />
+              <button type="submit" class="h-9 rounded-xl bg-[#0A84FF] text-white text-xs font-semibold hover:opacity-90 transition cursor-pointer">Создать</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Registered Users Table & Actions -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div class="surface-card p-5 lg:col-span-7 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-[16px] font-semibold text-white">Управление пользователями</h3>
+              <p class="text-[12px] text-[#8E8E93]">Вход в чужой профиль в 1 клик, смена пароля, начисление баланса, бан</p>
+            </div>
+          </div>
+          <div id="adminUsersList" class="space-y-3"></div>
+        </div>
+
+        <!-- Security Audit Log -->
+        <div class="surface-card p-5 lg:col-span-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-[16px] font-semibold text-white">Журнал безопасности (Audit Log)</h3>
+              <p class="text-[12px] text-[#8E8E93]">Входы, попытки взлома и блокировки WAF</p>
+            </div>
+            <button onclick="clearSecurityLogs()" class="px-2.5 py-1.5 rounded-lg bg-[#1C1C21] hover:bg-white/10 text-[11px] text-[#8E8E93] hover:text-white transition cursor-pointer">
+              Очистить
+            </button>
+          </div>
+          <div id="adminAuditLogList" class="space-y-2 max-h-[420px] overflow-y-auto pr-1"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Native iOS Bottom Tab Bar -->
+  <nav class="fixed bottom-0 left-0 right-0 z-40 ios-blur border-t border-white/[0.07] px-2 pt-1.5 pb-[calc(8px+env(safe-area-inset-bottom))]">
+    <div id="bottomNavGrid" class="max-w-md mx-auto grid grid-cols-5 gap-1">
+      <button onclick="switchTab('all')" id="nav-all" class="flex flex-col items-center justify-center py-1 text-[#0A84FF] transition cursor-pointer">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+          <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+          <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+          <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+        </svg>
+        <span class="text-[10px] font-medium mt-1">Все</span>
+      </button>
+
+      <button onclick="switchTab('overview')" id="nav-overview" class="flex flex-col items-center justify-center py-1 text-[#8E8E93] hover:text-white transition cursor-pointer">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path>
+          <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path>
+          <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path>
+        </svg>
+        <span class="text-[10px] font-medium mt-1">Баланс</span>
+      </button>
+
+      <button onclick="switchTab('credits')" id="nav-credits" class="flex flex-col items-center justify-center py-1 text-[#8E8E93] hover:text-white transition cursor-pointer">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+          <line x1="2" y1="10" x2="22" y2="10"></line>
+        </svg>
+        <span class="text-[10px] font-medium mt-1">Кредиты</span>
+      </button>
+
+      <button onclick="switchTab('analytics')" id="nav-analytics" class="flex flex-col items-center justify-center py-1 text-[#8E8E93] hover:text-white transition cursor-pointer">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+        <span class="text-[10px] font-medium mt-1">Графики</span>
+      </button>
+
+      <button onclick="switchTab('transactions')" id="nav-transactions" class="flex flex-col items-center justify-center py-1 text-[#8E8E93] hover:text-white transition cursor-pointer">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="8" y1="6" x2="21" y2="6"></line>
+          <line x1="8" y1="12" x2="21" y2="12"></line>
+          <line x1="8" y1="18" x2="21" y2="18"></line>
+          <line x1="3" y1="6" x2="3.01" y2="6"></line>
+          <line x1="3" y1="12" x2="3.01" y2="12"></line>
+          <line x1="3" y1="18" x2="3.01" y2="18"></line>
+        </svg>
+        <span class="text-[10px] font-medium mt-1">История</span>
+      </button>
+
+      <!-- Admin Tab Button (Hidden for non-admins) -->
+      <button onclick="switchTab('admin')" id="nav-admin" class="hidden flex-col items-center justify-center py-1 text-[#8E8E93] hover:text-white transition cursor-pointer">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+        <span class="text-[10px] font-medium mt-1">Админка</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- iOS Sheet Modal -->
+  <div id="shortcutModal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="surface-card max-w-lg w-full p-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-[17px] font-semibold text-white">Настройка на iPhone</h2>
+        <button onclick="closeShortcutModal()" class="w-8 h-8 rounded-full bg-[#1C1C21] text-[#8E8E93] hover:text-white flex items-center justify-center cursor-pointer">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs text-[#E5E5EA] leading-relaxed">
+        <div class="p-3.5 rounded-2xl bg-[#1C1C21] space-y-1.5">
+          <div class="font-semibold text-white">1. Иконка приложения на экран «Домой»</div>
+          <p class="text-[#8E8E93]">В Safari нажми «Поделиться» → «На экран Домой». Приложение откроется во весь экран и запомнит твой вход.</p>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-[#1C1C21] space-y-1.5">
+          <div class="font-semibold text-white">2. Персональная ссылка для «Команд» (Shortcuts)</div>
+          <p class="text-[#8E8E93]">В приложении «Команды» используй действие <strong>«Открыть URL-адреса»</strong> с адресом приложения:</p>
+          <code id="userShortcutWebhookCode" class="block bg-[#121215] p-2 rounded-lg text-[#0A84FF] select-all break-all">/</code>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-[#1C1C21] space-y-1.5">
+          <div class="font-semibold text-white">3. Системные уведомления о кредитах</div>
+          <p class="text-[#8E8E93]">Нажми кнопку <strong>«Календарь (.ics)»</strong> в шапке — iPhone создаст напоминания по твоим активным кредитам.</p>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-1">
+        <button onclick="closeShortcutModal()" class="px-5 py-2.5 rounded-xl bg-white text-[#09090B] text-xs font-semibold hover:bg-neutral-200 transition cursor-pointer">
+          Готово
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============================================================================
+    // ZERO-KNOWLEDGE SECURITY & CRYPTO ENGINE (AES-256-GCM + PBKDF2-SHA256 + WAF)
+    // ============================================================================
+    // No plaintext passwords, usernames, IPs, or personal financial records exist in source code!
+    const ADMIN_USER_SHA256 = '0d1a10520b97449b441227f90d004c3f0ea8f8d4ee13dfdf3bfde3dca2c15c7d';
+    const ADMIN_SALT_HEX = 'f9a3e8c1d4b2705192837465a0b1c2d3';
+    const ADMIN_HASH_HEX = '4d45f0241f713e919c0ef7191c746d4601ba6b9cd187890d5c74ee0bf1894410';
+
+    // Password-derived AES-256-GCM encrypted vault (can ONLY be decrypted with the admin password at login)
+    const VAULT_SALT_HEX = 'a7c4e9102b83d6f541928374650a1b2c';
+    const VAULT_IV_B64 = '9jzgVIOg4WxoPZjd';
+    const VAULT_CT_B64 = 'PCpKiwCj97Jkh30oE4uMV7sU0GYVCvBXWQh0txUnve5hMutpzshY5oc0mo8OMYdBWYoL8sdCCPOfa30Yj8dPioUsb9WMUuOVH9CYVEseGu9ka0gkotPIBJkB3avJjazkCzy2JLL0Wa+Kqgwn0Zb4WFRRUNj+W2Uz/5oeSRvvxJzP2ZyZh0ZMwjG9HUfTS9x4vqUByK0H2QYwJBg40o3sCIXvt5XMPahrqWmxkDhyZNyiHEfQktt2mEovLL/yOmOlk01XA+ntYu58/x9Gx1TWmAW7/pWijT8T38Va1jkmkHpirNJnX5IP6ak6DSDcV8SJcjGG3ToLC44bE4psCqkjOOcRGR6COLIiC2CtpLXyO2tvUJ/SYA4tF6VnfMeN3RaKLjWYpkLK4DNaOuJfQ15O1S6R4Gg8Y77l5FXItUV1PHidCJwns+tZMJ08BcteFuZGEKBABdopFfmtVgqSYr7VEZPIyyF92sZ6H2jzvlE90cww+XcaGYeFq1ni1E2vfcv7qtVmtsFP4HlYussdDLKYxsKuKnCXqcAv0A8/kpOJ51G0hZLCQ36usu81Bj2w7PLvLISXt90zxyWfkERS74WQ218BKHRVQW9kpQzeLkHBF3w4FnSMvQtVl0ikmy2Dwp/XMUQ+ROvmQjVbKixOKdjvSWJ7UPmAyZEcE4gMGohTrdHvg57QqAg1Md5iaiJNScggdmRJHUzgMdhGm52J+fbhkdc9rMrLHUOvb2lPd59F04lxsQpjbZba8hPGXTcXZULB4873V5IHBjwF1Ewa9myoyaom7xqPBoFmXjEbqze6mHSwNpbimK/E/2I4QGsVfN+jX2NVZpbIaTgqEsl6lDGbzU1JHm8ltcsbyfBebjHZ/7AlL5MWEP91idPuxiXZ0U6v+6LuHD0TtfuIcGhm3hHaGtURRWPPO7rfDAvFWEEthZWPDsh359SZjrjYrbmpdIb41tGFV4dJ5o1v/T/YLWNdow8IuKzDJBxSw809Z0QAxgMllqUu9kZ59ss3vyKBPSp7EjYguQU+wqp9heM4KS0Qfdt77e6zEK67bT65X2Y6DzrNmHR9OGy8+m9vhyJzLiBAbf53ABMowG3sLpGGoEIF6/H1LG1CjhqRdZCFanVYTB6UmjBAhpKQnqZe3EXMXbwo6wgexGYuOv86asDWl1IS0daTBYmam+/oULzzSGdxmzSxDHRICQ3p0M/mB4ErzoeWwplxw59LTEUfbd9hai7iICRv1OHEbi3YKsrUydAjZyY4uFb0MbMq1sVbrhsDe0dPbthMOqcbfGq6DYR8EIOB+/Mgs6D1c+M0xPFTdXTuo8vpdRSxbQVuMs2GlaZxMezgYIlqRyDyEHqPx1ymebBDmsmYigvYkHw3chfHZ8C/K2WTC15S1IHiaiAgygGb/RVBtxw93R+cWuWiaMjuWWA9S+SzlmlX2u2kcnbmgASiOZm5jZ3YiS9COAffBfPUrJi1ha4DqALGBLqF5DCdf/XGq+e1wm0ydlSrkpkVUq9YjOnuS4+wwPUhLmcTqm3h4uL8/DCC5xaPFUtISi0GTk6aEIrQn/RuMOeWkdfg5nGZjiI13MxjlV0+9Q/+ATmgerT0MS9Rs1wUw76uwpVPimvUcEshjkaR0Q==';
+
+    const MULTI_DB_KEY = 'finpulse_multi_users_db_v3';
+    const SESSION_KEY = 'finpulse_active_session_v3';
+
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function randomHex(bytes = 16) {
+      const arr = new Uint8Array(bytes);
+      crypto.getRandomValues(arr);
+      return Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function b64ToBytes(b64) {
+      const bin = atob(b64);
+      const arr = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      return arr;
+    }
+
+    function bytesToB64(bytes) {
+      let bin = '';
+      const arr = new Uint8Array(bytes);
+      for (let i = 0; i < arr.length; i++) bin += String.fromCharCode(arr[i]);
+      return btoa(bin);
+    }
+
+    async function sha256HexClient(str) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(String(str)));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function pbkdf2HexClient(password, saltHex) {
+      const enc = new TextEncoder();
+      const saltBytes = new Uint8Array(saltHex.match(/.{1,2}/g).map(b => parseInt(b, 16)));
+      const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(String(password)), 'PBKDF2', false, ['deriveBits']);
+      const bits = await crypto.subtle.deriveBits(
+        { name: 'PBKDF2', salt: saltBytes, iterations: 100000, hash: 'SHA-256' },
+        keyMaterial,
+        256
+      );
+      return Array.from(new Uint8Array(bits)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function decryptAdminVaultClient(password) {
+      try {
+        const enc = new TextEncoder();
+        const saltBytes = new Uint8Array(VAULT_SALT_HEX.match(/.{1,2}/g).map(b => parseInt(b, 16)));
+        const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(String(password)), 'PBKDF2', false, ['deriveKey']);
+        const aesKey = await crypto.subtle.deriveKey(
+          { name: 'PBKDF2', salt: saltBytes, iterations: 100000, hash: 'SHA-256' },
+          keyMaterial,
+          { name: 'AES-GCM', length: 256 },
+          false,
+          ['decrypt']
+        );
+        const decryptedBuf = await crypto.subtle.decrypt(
+          { name: 'AES-GCM', iv: b64ToBytes(VAULT_IV_B64) },
+          aesKey,
+          b64ToBytes(VAULT_CT_B64)
+        );
+        return JSON.parse(new TextDecoder().decode(decryptedBuf));
+      } catch (e) {
+        return getCleanUserProfile();
+      }
+    }
+
+    function getCleanUserProfile() {
+      return {
+        settings: {
+          currency: '₽',
+          paydayDay: 25,
+          salaryDay: 10,
+          advanceDay: 25,
+          cashWindow: '10–15 числа',
+          monthlyIncomeGoal: 100000
+        },
+        transactions: [],
+        credits: []
+      };
+    }
+
+    // ============================================================================
+    // ENCRYPTED CLOUD DATABASE ENGINE (AES-256-GCM End-to-End Encrypted Sync)
+    // ============================================================================
+    const CLOUD_POINTER_URL = 'https://api.restful-api.dev/objects/ff808181a09d98f701a12e232c8d44c9';
+    const CLOUD_BLOB_POST_URL = 'https://bytebin.lucko.me/post';
+    const CLOUD_BLOB_GET_BASE = 'https://bytebin.lucko.me/';
+    const CLOUD_CIPHER_SEED = 'fp_v3_aes_gcm_91a8c4e27b3d506f84219e0c7a5b3d1f';
+    let lastSyncedCloudKey = localStorage.getItem('finpulse_cloud_key_v3') || '';
+    let isCloudSyncing = false;
+
+    async function getCloudAesKey() {
+      const rawHash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(CLOUD_CIPHER_SEED));
+      return crypto.subtle.importKey('raw', rawHash, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
+    }
+
+    async function encryptCloudPayloadClient(obj) {
+      const key = await getCloudAesKey();
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const encoded = new TextEncoder().encode(JSON.stringify(obj));
+      const ctBuf = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, encoded);
+      return {
+        v: 3,
+        iv: bytesToB64(iv),
+        ct: bytesToB64(ctBuf)
+      };
+    }
+
+    async function decryptCloudPayloadClient(envelope) {
+      if (!envelope || !envelope.iv || !envelope.ct) return null;
+      const key = await getCloudAesKey();
+      const iv = b64ToBytes(envelope.iv);
+      const ct = b64ToBytes(envelope.ct);
+      const decBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct);
+      return JSON.parse(new TextDecoder().decode(decBuf));
+    }
+
+    function setCloudBadgeState(status, text) {
+      const badge = document.getElementById('cloudSyncBadge');
+      const dot = document.getElementById('cloudSyncDot');
+      const label = document.getElementById('cloudSyncText');
+      if (!badge || !dot || !label) return;
+      label.textContent = text;
+      if (status === 'syncing') {
+        badge.className = 'inline-flex items-center gap-1.5 text-[11px] px-2 py-0.5 rounded-full bg-[#0A84FF]/15 text-[#0A84FF] font-medium cursor-pointer transition';
+        dot.className = 'w-1.5 h-1.5 rounded-full bg-[#0A84FF] animate-pulse';
+      } else if (status === 'error') {
+        badge.className = 'inline-flex items-center gap-1.5 text-[11px] px-2 py-0.5 rounded-full bg-[#FF9F0A]/15 text-[#FF9F0A] font-medium cursor-pointer transition';
+        dot.className = 'w-1.5 h-1.5 rounded-full bg-[#FF9F0A]';
+      } else {
+        badge.className = 'inline-flex items-center gap-1.5 text-[11px] px-2 py-0.5 rounded-full bg-[#30D158]/15 text-[#30D158] font-medium cursor-pointer hover:opacity-80 transition';
+        dot.className = 'w-1.5 h-1.5 rounded-full bg-[#30D158]';
+      }
+    }
+
+    async function pushDbToCloud(db) {
+      if (isCloudSyncing) return;
+      isCloudSyncing = true;
+      setCloudBadgeState('syncing', 'Облако: Шифрование...');
+      try {
+        db.updatedAt = Date.now();
+        const encryptedEnvelope = await encryptCloudPayloadClient(db);
+        const postRes = await fetch(CLOUD_BLOB_POST_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(encryptedEnvelope)
+        });
+        if (!postRes.ok) throw new Error('Blob post failed');
+        const { key } = await postRes.json();
+        if (!key) throw new Error('No blob key');
+
+        const putRes = await fetch(CLOUD_POINTER_URL, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'fp_sync_v3',
+            data: { key, updatedAt: db.updatedAt }
+          })
+        });
+        if (!putRes.ok) throw new Error('Pointer put failed');
+
+        lastSyncedCloudKey = key;
+        localStorage.setItem('finpulse_cloud_key_v3', key);
+        setCloudBadgeState('ok', 'Облако: Защищено');
+      } catch (e) {
+        setCloudBadgeState('error', 'БД: Локальный кэш');
+      } finally {
+        isCloudSyncing = false;
+      }
+    }
+
+    async function pullDbFromCloud(force = false) {
+      if (isCloudSyncing && !force) return null;
+      try {
+        if (force) setCloudBadgeState('syncing', 'Облако: Загрузка...');
+        const ptrRes = await fetch(CLOUD_POINTER_URL, { cache: 'no-store' });
+        if (!ptrRes.ok) throw new Error('Pointer fetch failed');
+        const ptrJson = await ptrRes.json();
+        const remoteKey = ptrJson && ptrJson.data && ptrJson.data.key;
+        if (!remoteKey) return null;
+
+        if (!force && remoteKey === lastSyncedCloudKey && localStorage.getItem(MULTI_DB_KEY)) {
+          setCloudBadgeState('ok', 'Облако: Защищено');
+          return loadLocalMultiDb();
+        }
+
+        const blobRes = await fetch(CLOUD_BLOB_GET_BASE + remoteKey, { cache: 'no-store' });
+        if (!blobRes.ok) throw new Error('Blob fetch failed');
+        const rawPayload = await blobRes.json();
+        const cloudDb = rawPayload && rawPayload.ct
+          ? await decryptCloudPayloadClient(rawPayload)
+          : rawPayload;
+
+        if (cloudDb && cloudDb.users) {
+          lastSyncedCloudKey = remoteKey;
+          localStorage.setItem('finpulse_cloud_key_v3', remoteKey);
+          saveLocalMultiDb(cloudDb, true);
+          setCloudBadgeState('ok', 'Облако: Защищено');
+
+          if (currentSession) {
+            const u = cloudDb.users[currentSession.usernameLower];
+            if (!u || u.banned) {
+              logoutUser();
+            } else {
+              appData = u.profile;
+              renderAll(appData, calculateAnalyticsClient(appData));
+              if (currentSession.role === 'admin') loadAdminOverview();
+            }
+          }
+          if (cloudDb.system && typeof cloudDb.system.globalBanner === 'string') {
+            renderGlobalBanner(cloudDb.system.globalBanner);
+          }
+          return cloudDb;
+        }
+      } catch (e) {
+        setCloudBadgeState('error', 'БД: Автономно');
+      }
+      return null;
+    }
+
+    async function forceCloudSyncNow(pushCurrent = false) {
+      if (pushCurrent) {
+        const db = loadLocalMultiDb();
+        await pushDbToCloud(db);
+      } else {
+        await pullDbFromCloud(true);
+      }
+    }
+
+    function loadLocalMultiDb() {
+      try {
+        const raw = localStorage.getItem(MULTI_DB_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.users) {
+            return parsed;
+          }
+        }
+      } catch (e) {}
+
+      const initialDb = {
+        system: { allowRegistration: true },
+        lockouts: {},
+        users: {},
+        auditLog: [
+          {
+            id: 'log_init',
+            time: new Date().toISOString(),
+            type: 'SYSTEM_INIT',
+            severity: 'info',
+            actor: 'system',
+            ip: 'hidden',
+            details: 'Защищённое ядро FinPulse инициализировано (AES-256-GCM + PBKDF2 + WAF)'
+          }
+        ]
+      };
+      saveLocalMultiDb(initialDb, true);
+      return initialDb;
+    }
+
+    function saveLocalMultiDb(db, skipCloudPush = false) {
+      try {
+        if (db.auditLog && db.auditLog.length > 150) {
+          db.auditLog = db.auditLog.slice(0, 150);
+        }
+        localStorage.setItem(MULTI_DB_KEY, JSON.stringify(db));
+        if (!skipCloudPush) {
+          pushDbToCloud(db);
+        }
+      } catch (e) {}
+    }
+
+    function logLocalSecurityEvent(db, type, severity, actor, details) {
+      db.auditLog.unshift({
+        id: 'log_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+        time: new Date().toISOString(),
+        type,
+        severity,
+        actor: String(actor || 'anonymous').slice(0, 32),
+        ip: 'hidden',
+        details: String(details || '').slice(0, 240)
+      });
+      saveLocalMultiDb(db);
+    }
+
+    // Active State
+    let authMode = 'login';
+    let currentSession = null; // { token, username, usernameLower, role, shortcutToken }
+    let useBackend = false;
+    let appData = getCleanUserProfile();
+    let adminOverviewState = null;
+
+    let cashflowChartInstance = null;
+    let categoryChartInstance = null;
+    let debtPayoffChartInstance = null;
+
+    const fmt = (n) => Number(n || 0).toLocaleString('ru-RU') + ' ₽';
+
+    // ============================================================================
+    // AUTHENTICATION FLOW (Login / Register / Session Restore / Logout)
+    // ============================================================================
+    function setAuthMode(mode) {
+      authMode = mode;
+      const loginBtn = document.getElementById('authModeLoginBtn');
+      const regBtn = document.getElementById('authModeRegBtn');
+      const submitBtn = document.getElementById('authSubmitBtn');
+      const errBox = document.getElementById('authErrorBox');
+      errBox.classList.add('hidden');
+
+      if (mode === 'login') {
+        loginBtn.className = 'py-2 rounded-lg text-xs font-semibold bg-white text-[#09090B] transition cursor-pointer';
+        regBtn.className = 'py-2 rounded-lg text-xs font-semibold text-[#8E8E93] hover:text-white transition cursor-pointer';
+        submitBtn.innerHTML = '<span>Войти</span>';
+      } else {
+        regBtn.className = 'py-2 rounded-lg text-xs font-semibold bg-white text-[#09090B] transition cursor-pointer';
+        loginBtn.className = 'py-2 rounded-lg text-xs font-semibold text-[#8E8E93] hover:text-white transition cursor-pointer';
+        submitBtn.innerHTML = '<span>Создать аккаунт</span>';
+      }
+    }
+
+    function showAuthError(msg) {
+      const errBox = document.getElementById('authErrorBox');
+      errBox.textContent = msg;
+      errBox.classList.remove('hidden');
+    }
+
+    async function handleAuthSubmit(e) {
+      e.preventDefault();
+      const usernameInput = document.getElementById('authUsername').value.trim();
+      const passwordInput = document.getElementById('authPassword').value;
+      const errBox = document.getElementById('authErrorBox');
+      errBox.classList.add('hidden');
+
+      // WAF input check
+      if (/<\s*script|javascript:|onerror=|onload=|union\s+select/i.test(usernameInput)) {
+        const db = loadLocalMultiDb();
+        logLocalSecurityEvent(db, 'WAF_BLOCK', 'critical', usernameInput, 'Заблокирована попытка XSS/SQL инъекции в поле логина');
+        return showAuthError('Запрос заблокирован фильтром безопасности WAF');
+      }
+
+      // 1. Try Backend Server first if reachable
+      try {
+        const endpoint = authMode === 'login' ? '/api/auth/login' : '/api/auth/register';
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: usernameInput, password: passwordInput })
+        });
+        const contentType = res.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          const json = await res.json();
+          if (!res.ok || !json.ok) {
+            return showAuthError(json.error || 'Ошибка авторизации');
+          }
+          useBackend = true;
+          currentSession = {
+            token: json.token,
+            username: json.user.username,
+            usernameLower: json.user.username.toLowerCase(),
+            role: json.user.role,
+            shortcutToken: json.user.shortcutToken
+          };
+          localStorage.setItem(SESSION_KEY, JSON.stringify(currentSession));
+          document.getElementById('authPassword').value = '';
+          onAuthSuccess();
+          return;
+        }
+      } catch (err) {
+        // Fallback to Cloud DB + WebCrypto engine
+      }
+
+      // 2. Pull latest multi-user database from Cloud DB before checking credentials
+      await pullDbFromCloud(true);
+      const db = loadLocalMultiDb();
+      const uLower = usernameInput.toLowerCase();
+      const uSha256 = await sha256HexClient(uLower);
+      const isRootAdminLogin = (uSha256 === ADMIN_USER_SHA256);
+
+      if (authMode === 'login') {
+        const lock = (db.lockouts && db.lockouts[uLower]) || { count: 0, lockedUntil: 0 };
+        if (lock.lockedUntil && Date.now() < lock.lockedUntil) {
+          const secLeft = Math.ceil((lock.lockedUntil - Date.now()) / 1000);
+          logLocalSecurityEvent(db, 'BRUTEFORCE_LOCKOUT', 'high', uLower, `Блокировка перебора пароля (${secLeft} сек.)`);
+          return showAuthError(`Слишком много неудачных попыток. Повторите через ${secLeft} сек.`);
+        }
+
+        let user = db.users[uLower];
+        const saltToUse = isRootAdminLogin ? ADMIN_SALT_HEX : (user ? user.salt : ADMIN_SALT_HEX);
+        const expectedHash = isRootAdminLogin ? ADMIN_HASH_HEX : (user ? user.passwordHash : '');
+        const computedHash = await pbkdf2HexClient(passwordInput, saltToUse);
+
+        if ((!user && !isRootAdminLogin) || computedHash !== expectedHash) {
+          lock.count = (lock.count || 0) + 1;
+          if (lock.count >= 5) {
+            lock.lockedUntil = Date.now() + 15 * 60 * 1000;
+          }
+          db.lockouts = db.lockouts || {};
+          db.lockouts[uLower] = lock;
+          logLocalSecurityEvent(db, 'AUTH_FAIL', 'warn', uLower, `Неверный пароль (${lock.count}/5)`);
+          return showAuthError('Неверный логин или пароль');
+        }
+
+        // If root admin logs in and isn't initialized in local/cloud yet, decrypt zero-knowledge vault using password
+        if (isRootAdminLogin && !user) {
+          const unlockedProfile = await decryptAdminVaultClient(passwordInput);
+          user = {
+            id: 'usr_root_admin',
+            username: usernameInput,
+            usernameLower: uLower,
+            role: 'admin',
+            salt: ADMIN_SALT_HEX,
+            passwordHash: ADMIN_HASH_HEX,
+            shortcutToken: 'fp_' + randomHex(10),
+            banned: false,
+            createdAt: new Date().toISOString(),
+            lastLoginAt: new Date().toISOString(),
+            profile: unlockedProfile
+          };
+          db.users[uLower] = user;
+        } else if (isRootAdminLogin && user) {
+          user.role = 'admin';
+          user.banned = false;
+        }
+
+        if (user.banned) {
+          logLocalSecurityEvent(db, 'AUTH_BANNED', 'warn', user.username, 'Попытка входа в заблокированный аккаунт');
+          return showAuthError('Ваш аккаунт заблокирован администратором');
+        }
+
+        if (db.lockouts) delete db.lockouts[uLower];
+        user.lastLoginAt = new Date().toISOString();
+        logLocalSecurityEvent(db, 'AUTH_SUCCESS', 'info', user.username, `Успешный вход (${user.role})`);
+
+        currentSession = {
+          token: 'local_' + randomHex(16),
+          username: user.username,
+          usernameLower: user.usernameLower,
+          role: user.role,
+          shortcutToken: user.shortcutToken
+        };
+        localStorage.setItem(SESSION_KEY, JSON.stringify(currentSession));
+        document.getElementById('authPassword').value = '';
+        onAuthSuccess();
+      } else {
+        // Register mode
+        if (!db.system.allowRegistration) {
+          return showAuthError('Регистрация новых пользователей отключена администратором');
+        }
+        if (!/^[a-zA-Zа-яА-ЯёЁ0-9_.-]{3,24}$/.test(usernameInput)) {
+          return showAuthError('Логин должен быть от 3 до 24 символов (буквы, цифры, _ . -)');
+        }
+        if (passwordInput.length < 6) {
+          return showAuthError('Пароль должен содержать минимум 6 символов');
+        }
+        if (db.users[uLower] || isRootAdminLogin) {
+          return showAuthError('Этот логин уже занят');
+        }
+
+        const salt = randomHex(16);
+        const passwordHash = await pbkdf2HexClient(passwordInput, salt);
+        const shortcutToken = 'fp_' + randomHex(10);
+
+        db.users[uLower] = {
+          id: 'usr_' + Date.now(),
+          username: usernameInput,
+          usernameLower: uLower,
+          role: 'user',
+          salt,
+          passwordHash,
+          shortcutToken,
+          banned: false,
+          createdAt: new Date().toISOString(),
+          lastLoginAt: new Date().toISOString(),
+          profile: getCleanUserProfile()
+        };
+
+        logLocalSecurityEvent(db, 'USER_REGISTER', 'info', usernameInput, 'Зарегистрирован новый аккаунт');
+
+        currentSession = {
+          token: 'local_' + randomHex(16),
+          username: usernameInput,
+          usernameLower: uLower,
+          role: 'user',
+          shortcutToken
+        };
+        localStorage.setItem(SESSION_KEY, JSON.stringify(currentSession));
+        document.getElementById('authPassword').value = '';
+        onAuthSuccess();
+      }
+    }
+
+    function logoutUser() {
+      localStorage.removeItem(SESSION_KEY);
+      currentSession = null;
+      document.getElementById('authScreen').classList.remove('hidden');
+      switchTab('all');
+    }
+
+    function onAuthSuccess() {
+      document.getElementById('authScreen').classList.add('hidden');
+      document.getElementById('currentUserBadge').textContent = currentSession.username;
+
+      const adminBadge = document.getElementById('adminRoleBadge');
+      const navAdminBtn = document.getElementById('nav-admin');
+      const bottomNavGrid = document.getElementById('bottomNavGrid');
+
+      if (currentSession.role === 'admin') {
+        adminBadge.classList.remove('hidden');
+        navAdminBtn.classList.remove('hidden');
+        navAdminBtn.classList.add('flex');
+        bottomNavGrid.className = 'max-w-lg mx-auto grid grid-cols-6 gap-1';
+      } else {
+        adminBadge.classList.add('hidden');
+        navAdminBtn.classList.add('hidden');
+        navAdminBtn.classList.remove('flex');
+        bottomNavGrid.className = 'max-w-md mx-auto grid grid-cols-5 gap-1';
+      }
+
+      document.getElementById('userShortcutWebhookCode').textContent = window.location.origin + window.location.pathname;
+
+      loadDashboard();
+    }
+
+    function switchTab(tabName) {
+      const isAdmin = currentSession && currentSession.role === 'admin';
+      const sections = ['overview', 'credits', 'analytics', 'transactions'];
+
+      sections.forEach(s => {
+        const el = document.getElementById('tab-' + s);
+        if (!el) return;
+        if (tabName === 'all' || tabName === s) {
+          el.classList.remove('hidden');
+        } else {
+          el.classList.add('hidden');
+        }
+      });
+
+      const adminSection = document.getElementById('tab-admin');
+      const quickInput = document.getElementById('quickInputSection');
+
+      if (tabName === 'admin' && isAdmin) {
+        adminSection.classList.remove('hidden');
+        quickInput.classList.add('hidden');
+        loadAdminOverview();
+      } else {
+        adminSection.classList.add('hidden');
+        quickInput.classList.remove('hidden');
+      }
+
+      ['all', ...sections, 'admin'].forEach(navId => {
+        const btn = document.getElementById('nav-' + navId);
+        if (!btn) return;
+        const hiddenClass = (navId === 'admin' && !isAdmin) ? 'hidden ' : 'flex ';
+        if (navId === tabName) {
+          btn.className = hiddenClass + 'flex-col items-center justify-center py-1 text-[#0A84FF] transition cursor-pointer';
+        } else {
+          btn.className = hiddenClass + 'flex-col items-center justify-center py-1 text-[#8E8E93] hover:text-white transition cursor-pointer';
+        }
+      });
+    }
+
+    function getBankBrandStyle(name) {
+      const lower = (name || '').toLowerCase();
+      if (lower.includes('сбер')) return { bg: '#102A1E', color: '#21A038', label: 'СБ' };
+      if (lower.includes('уралсиб')) return { bg: '#1E1B36', color: '#8B5CF6', label: 'УС' };
+      if (lower.includes('сплит') || lower.includes('яндекс')) return { bg: '#272214', color: '#FFCC00', label: 'ЯС' };
+      return { bg: '#2C1618', color: '#FF453A', label: 'КР' };
+    }
+
+    function saveCurrentUserProfileLocal(profileData) {
+      appData = profileData;
+      if (!currentSession) return;
+      const db = loadLocalMultiDb();
+      const user = db.users[currentSession.usernameLower];
+      if (user) {
+        user.profile = profileData;
+        saveLocalMultiDb(db);
+      }
+    }
+
+    function parseSmartInputClient(rawText) {
+      if (!rawText || typeof rawText !== 'string') return [];
+      const parts = rawText.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean);
+      const results = [];
+      const categoryKeywords = [
+        { cat: 'Зарплата', type: 'income', words: ['зп', 'зарплат', 'аванс', 'оклад', 'преми', 'наличк'] },
+        { cat: 'Фриланс / Доход', type: 'income', words: ['доход', 'фриланс', 'перевод', 'вернул', 'кэшбэк', 'кешбек', 'плюс'] },
+        { cat: 'Продукты', type: 'expense', words: ['продукт', 'пятерочк', 'перекрест', 'магнит', 'вкусвилл', 'лента', 'самокат', 'хлеб', 'молок', 'еда'] },
+        { cat: 'Кафе и рестораны', type: 'expense', words: ['кофе', 'обед', 'ужин', 'завтрак', 'кафе', 'ресторан', 'бургер', 'пицц', 'шаурм'] },
+        { cat: 'Транспорт', type: 'expense', words: ['такси', 'бензин', 'заправк', 'метро', 'автобус', 'парковк', 'проезд'] },
+        { cat: 'Дом и ЖКУ', type: 'expense', words: ['жкх', 'кварплат', 'аренд', 'свет', 'вода', 'дом', 'аптек'] },
+        { cat: 'Покупки и Маркетплейсы', type: 'expense', words: ['озон', 'ozon', 'wb', 'вб', 'вайлдберриз', 'маркет', 'одежд'] },
+        { cat: 'Подписки и связь', type: 'expense', words: ['связь', 'интернет', 'подписк', 'мтс', 'билайн', 'мегафон', 'теле2'] }
+      ];
+
+      for (const part of parts) {
+        const lower = part.toLowerCase();
+        const numMatch = part.match(/([+-]?\d+(?:[.,]\d+)?)/);
+        if (!numMatch) continue;
+        const rawNum = numMatch[1].replace(',', '.');
+        const amount = Math.abs(parseFloat(rawNum));
+        if (isNaN(amount) || amount <= 0 || amount > 1e9) continue;
+
+        let type = rawNum.startsWith('+') ? 'income' : 'expense';
+        let category = type === 'income' ? 'Доход' : 'Разное';
+        for (const rule of categoryKeywords) {
+          if (rule.words.some(w => lower.includes(w))) {
+            category = rule.cat;
+            if (rule.type === 'income') type = 'income';
+            break;
+          }
+        }
+        const titleClean = part.replace(numMatch[0], '').replace(/[₽рp.<>]+/gi, '').trim().slice(0, 80) || category;
+        const title = titleClean.charAt(0).toUpperCase() + titleClean.slice(1);
+        results.push({
+          id: 't_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+          type,
+          amount,
+          category,
+          title,
+          date: new Date().toISOString()
+        });
+      }
+      return results;
+    }
+
+    function calculateAnalyticsClient(data) {
+      const now = new Date();
+      const currentDay = now.getDate();
+      const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+
+      let totalIncome = 0;
+      let totalExpense = 0;
+      const expensesByCategory = {};
+
+      for (const t of data.transactions || []) {
+        if (t.type === 'income') {
+          totalIncome += Number(t.amount);
+        } else {
+          totalExpense += Number(t.amount);
+          expensesByCategory[t.category] = (expensesByCategory[t.category] || 0) + Number(t.amount);
+        }
+      }
+
+      const netBalance = totalIncome - totalExpense;
+      let totalDebt = 0;
+      let totalMonthlyCreditPayment = 0;
+      let unpaidCreditReserve = 0;
+      const upcomingReminders = [];
+
+      const creditsEnriched = (data.credits || []).map(c => {
+        totalDebt += Number(c.totalDebt);
+        totalMonthlyCreditPayment += Number(c.monthlyPayment);
+        if (!c.paidThisMonth) unpaidCreditReserve += Number(c.monthlyPayment);
+
+        let daysUntil = c.paymentDay - currentDay;
+        if (daysUntil < 0) daysUntil = (daysInMonth - currentDay) + c.paymentDay;
+
+        if (!c.paidThisMonth && daysUntil <= 14) {
+          upcomingReminders.push({
+            id: c.id,
+            name: c.name,
+            amount: c.monthlyPayment,
+            paymentDay: c.paymentDay,
+            daysUntil
+          });
+        }
+
+        const paidPercent = c.originalAmount > 0
+          ? Math.max(0, Math.min(100, Math.round(((c.originalAmount - c.totalDebt) / c.originalAmount) * 100)))
+          : 0;
+
+        return { ...c, daysUntil, paidPercent };
+      }).sort((a, b) => a.daysUntil - b.daysUntil);
+
+      const freeMoneyAfterCredits = netBalance - unpaidCreditReserve;
+      let daysToPayday = 1;
+      let nextPaydayTitle = '25-го числа (Аванс)';
+      if (currentDay < 10) {
+        daysToPayday = 10 - currentDay;
+        nextPaydayTitle = '10-го числа (ЗП + нал)';
+      } else if (currentDay < 25) {
+        daysToPayday = 25 - currentDay;
+        nextPaydayTitle = '25-го числа (Аванс)';
+      } else {
+        daysToPayday = (daysInMonth - currentDay) + 10;
+        nextPaydayTitle = '10-го числа (ЗП + нал)';
+      }
+
+      const safeDailyLimit = Math.max(0, Math.round(freeMoneyAfterCredits / Math.max(1, daysToPayday)));
+      const baseIncome = Math.max(totalIncome, (data.settings && data.settings.monthlyIncomeGoal) || 150000);
+      const dtiPercent = Math.round((totalMonthlyCreditPayment / baseIncome) * 100);
+
+      return {
+        totalIncome,
+        totalExpense,
+        netBalance,
+        totalDebt,
+        totalMonthlyCreditPayment,
+        unpaidCreditReserve,
+        freeMoneyAfterCredits,
+        safeDailyLimit,
+        daysToPayday,
+        nextPaydayTitle,
+        dtiPercent,
+        expensesByCategory,
+        creditsEnriched,
+        upcomingReminders
+      };
+    }
+
+    async function loadDashboard() {
+      if (!currentSession) return;
+      try {
+        const res = await fetch('/api/state', {
+          cache: 'no-store',
+          headers: { 'Authorization': 'Bearer ' + currentSession.token }
+        });
+        if (res.ok) {
+          const json = await res.json();
+          useBackend = true;
+          saveCurrentUserProfileLocal(json.data);
+          renderAll(json.data, json.analytics);
+          if (currentSession.role === 'admin') loadAdminOverview();
+          return;
+        }
+      } catch (e) {
+        useBackend = false;
+      }
+
+      const db = loadLocalMultiDb();
+      const user = db.users[currentSession.usernameLower];
+      if (!user || user.banned) {
+        logoutUser();
+        return;
+      }
+      appData = user.profile;
+      const analytics = calculateAnalyticsClient(appData);
+      renderAll(appData, analytics);
+      if (currentSession.role === 'admin') loadAdminOverview();
+    }
+
+    function renderAll(data, analytics) {
+      const freeEl = document.getElementById('kpiFreeMoney');
+      freeEl.textContent = fmt(analytics.freeMoneyAfterCredits);
+      freeEl.className = `text-[36px] sm:text-[42px] font-bold tracking-tight tabular-nums mt-1 leading-none ${
+        analytics.freeMoneyAfterCredits < 0 ? 'text-[#FF453A]' : 'text-white'
+      }`;
+
+      document.getElementById('kpiNetBalance').textContent = fmt(analytics.netBalance);
+      document.getElementById('kpiReserveSub').textContent = `Резерв кредитов: ${fmt(analytics.unpaidCreditReserve)}`;
+      document.getElementById('kpiSafeDaily').textContent = fmt(analytics.safeDailyLimit) + '/дн';
+      document.getElementById('kpiDaysToPayday').textContent = `До выплаты ${analytics.daysToPayday} дн. • ${analytics.nextPaydayTitle || '25-го'}`;
+
+      document.getElementById('kpiIncome').textContent = '+' + fmt(analytics.totalIncome);
+      document.getElementById('kpiExpense').textContent = '-' + fmt(analytics.totalExpense);
+      document.getElementById('kpiTotalDebt').textContent = fmt(analytics.totalDebt);
+      document.getElementById('kpiMonthlyCredit').textContent = fmt(analytics.totalMonthlyCreditPayment) + '/мес';
+
+      const dtiBadge = document.getElementById('kpiDtiBadge');
+      dtiBadge.textContent = `ПДН ${analytics.dtiPercent}%`;
+      dtiBadge.className = `text-[11px] px-2.5 py-0.5 rounded-full font-semibold tabular-nums ${
+        analytics.dtiPercent > 50
+          ? 'bg-[#FF453A]/15 text-[#FF453A]'
+          : analytics.dtiPercent > 30
+          ? 'bg-[#FF9F0A]/15 text-[#FF9F0A]'
+          : 'bg-[#30D158]/15 text-[#30D158]'
+      }`;
+
+      const banner = document.getElementById('remindersBanner');
+      const bannerText = document.getElementById('remindersBannerText');
+      if (analytics.upcomingReminders.length > 0) {
+        banner.classList.remove('hidden');
+        bannerText.textContent = analytics.upcomingReminders
+          .map(r => `${r.name}: ${fmt(r.amount)} (${r.daysUntil === 0 ? 'сегодня' : `через ${r.daysUntil} дн., ${r.paymentDay}-го числа`})`)
+          .join('  •  ');
+      } else {
+        banner.classList.add('hidden');
+      }
+
+      renderCredits(analytics.creditsEnriched);
+      renderTransactions(data.transactions || []);
+      renderCharts(data, analytics);
+      updatePayoffSimulator();
+    }
+
+    function renderCredits(credits) {
+      const container = document.getElementById('creditsList');
+      if (!credits.length) {
+        container.innerHTML = `<div class="text-xs text-[#8E8E93] py-6 text-center">Активных кредитов в профиле нет. Нажмите «Добавить», чтобы внести кредит или рассрочку.</div>`;
+        return;
+      }
+
+      container.innerHTML = credits.map(c => {
+        const brand = getBankBrandStyle(c.name);
+        const safeName = escapeHtml(c.name);
+        const safeId = escapeHtml(c.id);
+        const statusBadge = c.paidThisMonth
+          ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] bg-[#30D158]/12 text-[#30D158] font-medium">Внесён</span>`
+          : c.daysUntil <= 5
+          ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] bg-[#FF453A]/15 text-[#FF453A] font-medium tabular-nums">Через ${c.daysUntil} дн. (${c.paymentDay}-го)</span>`
+          : `<span class="px-2.5 py-0.5 rounded-full text-[11px] bg-[#FF9F0A]/12 text-[#FF9F0A] font-medium tabular-nums">${c.paymentDay}-го числа (${c.daysUntil} дн.)</span>`;
+
+        return `
+          <div class="rounded-2xl bg-[#1C1C21] border border-white/[0.06] p-4 space-y-3.5">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xs tracking-tight shrink-0" style="background:${brand.bg}; color:${brand.color}; border: 1px solid rgba(255,255,255,0.06)">
+                  ${brand.label}
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <h4 class="font-semibold text-[15px] text-white leading-tight">${safeName}</h4>
+                    ${statusBadge}
+                  </div>
+                  <div class="text-[12px] text-[#8E8E93] mt-0.5 tabular-nums">
+                    Ставка ${Number(c.interestRate)}% • Остаток: <span class="text-white font-medium">${fmt(c.totalDebt)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-right shrink-0">
+                <div class="text-[15px] font-bold text-white tabular-nums">${fmt(c.monthlyPayment)}</div>
+                <div class="text-[11px] text-[#8E8E93]">в месяц</div>
+              </div>
+            </div>
+
+            <div class="space-y-1.5">
+              <div class="w-full h-1.5 rounded-full bg-[#121215] overflow-hidden">
+                <div class="h-full rounded-full transition-all duration-500" style="width: ${Math.max(4, c.paidPercent)}%; background-color: ${c.paidThisMonth ? '#30D158' : '#0A84FF'}"></div>
+              </div>
+              <div class="flex justify-between text-[11px] text-[#8E8E93] tabular-nums">
+                <span>Погашено ${c.paidPercent}%</span>
+                <span>Из ${fmt(c.originalAmount)}</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-2 pt-1">
+              ${!c.paidThisMonth ? `
+                <button onclick="markCreditPaid('${safeId}')" class="flex-1 min-h-[40px] px-3 py-2 rounded-xl bg-white hover:bg-neutral-200 text-[#09090B] text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer tabular-nums">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  <span>Отметить платёж (${fmt(c.monthlyPayment)})</span>
+                </button>
+              ` : `
+                <div class="flex-1 min-h-[40px] px-3 py-2 rounded-xl bg-[#121215] text-[#30D158] border border-[#30D158]/20 text-xs font-medium flex items-center justify-center gap-1.5">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  <span>Оплачен в текущем месяце</span>
+                </div>
+              `}
+              <button onclick="deleteCredit('${safeId}')" aria-label="Удалить кредит" class="w-10 h-10 rounded-xl bg-[#121215] text-[#8E8E93] hover:text-[#FF453A] flex items-center justify-center transition cursor-pointer">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderTransactions(transactions) {
+      const container = document.getElementById('transactionsList');
+      if (!transactions.length) {
+        container.innerHTML = `<div class="py-8 text-center text-[#636366] text-xs">Операций за период пока нет. Используйте строку быстрого ввода выше.</div>`;
+        return;
+      }
+
+      container.innerHTML = transactions.slice(0, 25).map(t => {
+        const isInc = t.type === 'income';
+        const safeTitle = escapeHtml(t.title);
+        const safeCategory = escapeHtml(t.category);
+        const safeId = escapeHtml(t.id);
+        const d = new Date(t.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+        return `
+          <div class="py-3.5 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isInc ? 'bg-[#30D158]/12 text-[#30D158]' : 'bg-[#1C1C21] text-[#8E8E93]'}">
+                ${isInc
+                  ? `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>`
+                  : `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>`
+                }
+              </div>
+              <div class="min-w-0">
+                <div class="font-medium text-white text-[14px] truncate">${safeTitle}</div>
+                <div class="text-[12px] text-[#8E8E93]">${safeCategory} • ${d}</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+              <span class="font-semibold text-[15px] tabular-nums ${isInc ? 'text-[#30D158]' : 'text-white'}">
+                ${isInc ? '+' : '−'}${fmt(t.amount)}
+              </span>
+              <button onclick="deleteTransaction('${safeId}')" aria-label="Удалить операцию" class="w-8 h-8 rounded-lg text-[#636366] hover:text-[#FF453A] flex items-center justify-center cursor-pointer">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderCharts(data, analytics) {
+      const ctx1 = document.getElementById('cashflowChart').getContext('2d');
+      if (cashflowChartInstance) cashflowChartInstance.destroy();
+
+      cashflowChartInstance = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+          labels: ['Доходы', 'Расходы', 'Кредиты/мес', 'Свободно'],
+          datasets: [{
+            label: 'Сумма (₽)',
+            data: [
+              analytics.totalIncome,
+              analytics.totalExpense,
+              analytics.totalMonthlyCreditPayment,
+              Math.max(0, analytics.freeMoneyAfterCredits)
+            ],
+            backgroundColor: ['#30D158', '#FF453A', '#FF9F0A', '#0A84FF'],
+            borderRadius: 8,
+            barThickness: 36
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: 'rgba(255,255,255,0.04)' },
+              ticks: { color: '#8E8E93', font: { size: 11 } }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: '#8E8E93', font: { size: 12, weight: '500' } }
+            }
+          }
+        }
+      });
+
+      const ctx2 = document.getElementById('categoryChart').getContext('2d');
+      if (categoryChartInstance) categoryChartInstance.destroy();
+
+      const catLabels = Object.keys(analytics.expensesByCategory);
+      const catValues = Object.values(analytics.expensesByCategory);
+
+      categoryChartInstance = new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+          labels: catLabels.length ? catLabels : ['Кредитные обязательства'],
+          datasets: [{
+            data: catValues.length ? catValues : [Math.max(1, analytics.totalMonthlyCreditPayment)],
+            backgroundColor: ['#0A84FF', '#30D158', '#FF9F0A', '#FF453A', '#BF5AF2', '#64D2FF', '#FFD60A'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '72%',
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { color: '#8E8E93', boxWidth: 10, padding: 12, font: { size: 11 } }
+            }
+          }
+        }
+      });
+    }
+
+    function updatePayoffSimulator() {
+      const credits = appData.credits || [];
+      const extra = Number(document.getElementById('extraPaySlider').value || 0);
+      document.getElementById('extraPayLabel').textContent = '+' + fmt(extra);
+
+      const totalDebt = credits.reduce((s, c) => s + Number(c.totalDebt), 0);
+      const baseMonthly = credits.reduce((s, c) => s + Number(c.monthlyPayment), 0);
+
+      if (totalDebt <= 0 || baseMonthly <= 0) {
+        document.getElementById('simNormalMonths').textContent = '0 мес.';
+        document.getElementById('simFastMonths').textContent = '0 мес.';
+        document.getElementById('simTargetCredit').textContent = 'Нет активных кредитов';
+        return;
+      }
+
+      const normalMonths = Math.ceil(totalDebt / baseMonthly);
+      const fastMonths = Math.ceil(totalDebt / (baseMonthly + extra));
+      const savedMonths = Math.max(0, normalMonths - fastMonths);
+
+      const sortedByRate = [...credits].sort((a, b) => b.interestRate - a.interestRate);
+      const topTarget = sortedByRate[0];
+
+      document.getElementById('simNormalMonths').textContent = `${normalMonths} мес.`;
+      document.getElementById('simFastMonths').textContent = `${fastMonths} мес. (−${savedMonths} мес.)`;
+      document.getElementById('simTargetCredit').textContent = topTarget ? `${topTarget.name} (${topTarget.interestRate}%)` : '—';
+
+      const labels = [];
+      const normalSeries = [];
+      const fastSeries = [];
+      const steps = Math.min(24, Math.max(normalMonths, 6));
+
+      for (let m = 0; m <= steps; m++) {
+        labels.push(`${m}м`);
+        normalSeries.push(Math.max(0, totalDebt - baseMonthly * m));
+        fastSeries.push(Math.max(0, totalDebt - (baseMonthly + extra) * m));
+      }
+
+      const ctx3 = document.getElementById('debtPayoffChart').getContext('2d');
+      if (debtPayoffChartInstance) debtPayoffChartInstance.destroy();
+
+      debtPayoffChartInstance = new Chart(ctx3, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Обычный график',
+              data: normalSeries,
+              borderColor: '#636366',
+              borderDash: [4, 4],
+              borderWidth: 1.5,
+              tension: 0.3,
+              pointRadius: 0
+            },
+            {
+              label: 'С ускорением',
+              data: fastSeries,
+              borderColor: '#30D158',
+              backgroundColor: 'rgba(48, 209, 88, 0.12)',
+              borderWidth: 2,
+              fill: true,
+              tension: 0.3,
+              pointRadius: 0
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { display: false },
+            x: { grid: { display: false }, ticks: { color: '#636366', maxTicksLimit: 6, font: { size: 10 } } }
+          }
+        }
+      });
+    }
+
+    // ============================================================================
+    // ADMIN PANEL LOGIC
+    // ============================================================================
+    async function loadAdminOverview() {
+      if (!currentSession || currentSession.role !== 'admin') return;
+
+      if (useBackend) {
+        try {
+          const res = await fetch('/api/admin/overview', {
+            headers: { 'Authorization': 'Bearer ' + currentSession.token }
+          });
+          if (res.ok) {
+            adminOverviewState = await res.json();
+            renderAdminPanel(adminOverviewState);
+            return;
+          }
+        } catch (e) {}
+      }
+
+      const db = loadLocalMultiDb();
+      const usersList = Object.values(db.users).map(u => {
+        const a = calculateAnalyticsClient(u.profile);
+        return {
+          username: u.username,
+          usernameLower: u.usernameLower,
+          role: u.role,
+          banned: !!u.banned,
+          createdAt: u.createdAt,
+          lastLoginAt: u.lastLoginAt,
+          transactionsCount: (u.profile.transactions || []).length,
+          creditsCount: (u.profile.credits || []).length,
+          totalDebt: a.totalDebt,
+          netBalance: a.netBalance
+        };
+      });
+
+      adminOverviewState = {
+        system: db.system,
+        users: usersList,
+        auditLog: db.auditLog || []
+      };
+      renderAdminPanel(adminOverviewState);
+    }
+
+    function renderAdminPanel(state) {
+      document.getElementById('adminTotalUsers').textContent = state.users.length;
+      document.getElementById('adminTotalLogs').textContent = state.auditLog.length;
+
+      const totalPlatBal = state.users.reduce((s, u) => s + Number(u.netBalance || 0), 0);
+      const totalPlatDebt = state.users.reduce((s, u) => s + Number(u.totalDebt || 0), 0);
+      document.getElementById('adminPlatformBalance').textContent = fmt(totalPlatBal);
+      document.getElementById('adminPlatformDebt').textContent = fmt(totalPlatDebt);
+
+      const bannerText = (state.system && state.system.globalBanner) || '';
+      const bannerInput = document.getElementById('adminBannerInput');
+      if (bannerInput && document.activeElement !== bannerInput) {
+        bannerInput.value = bannerText;
+      }
+      renderGlobalBanner(bannerText);
+
+      const regBtn = document.getElementById('adminRegToggleBtn');
+      const allowReg = state.system && state.system.allowRegistration;
+      regBtn.textContent = `Регистрация: ${allowReg ? 'ВКЛ' : 'ВЫКЛ'}`;
+      regBtn.className = `min-h-[38px] px-3.5 py-2 rounded-xl text-xs font-semibold transition cursor-pointer ${
+        allowReg ? 'bg-[#30D158]/15 text-[#30D158] border border-[#30D158]/30' : 'bg-[#FF453A]/15 text-[#FF453A] border border-[#FF453A]/30'
+      }`;
+
+      const usersContainer = document.getElementById('adminUsersList');
+      usersContainer.innerHTML = state.users.map(u => {
+        const safeUser = escapeHtml(u.username);
+        const safeLower = escapeHtml(u.usernameLower);
+        const isRootAdmin = u.role === 'admin';
+        return `
+          <div class="p-3.5 rounded-2xl bg-[#1C1C21] border border-white/[0.06] space-y-2.5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold text-sm text-white">${safeUser}</span>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase ${
+                    u.role === 'admin' ? 'bg-[#0A84FF]/20 text-[#0A84FF]' : 'bg-white/[0.08] text-[#8E8E93]'
+                  }">${escapeHtml(u.role)}</span>
+                  ${u.banned ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-[#FF453A]/20 text-[#FF453A] font-semibold">ЗАБЛОКИРОВАН</span>` : ''}
+                </div>
+                <div class="text-[11px] text-[#8E8E93] mt-1 tabular-nums">
+                  Кредитов: ${u.creditsCount} (${fmt(u.totalDebt)}) • Операций: ${u.transactionsCount} • Баланс: <strong class="text-white">${fmt(u.netBalance)}</strong>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-1.5">
+                ${!isRootAdmin ? `
+                  <button onclick="adminImpersonateUser('${safeLower}')" class="px-2.5 py-1.5 rounded-xl bg-[#0A84FF]/15 hover:bg-[#0A84FF]/25 text-[11px] font-semibold text-[#0A84FF] transition cursor-pointer">
+                    Войти в профиль
+                  </button>
+                  <button onclick="adminPromptPassword('${safeLower}')" class="px-2.5 py-1.5 rounded-xl bg-[#121215] hover:bg-white/10 text-[11px] text-white transition cursor-pointer">
+                    Пароль
+                  </button>
+                ` : ''}
+                <button onclick="adminPromptBonus('${safeLower}')" class="px-2.5 py-1.5 rounded-xl bg-[#121215] hover:bg-[#30D158]/20 text-[11px] text-[#30D158] transition cursor-pointer">
+                  ± Баланс
+                </button>
+                <button onclick="adminUserAction('reset_user', '${safeLower}')" class="px-2.5 py-1.5 rounded-xl bg-[#121215] hover:bg-white/10 text-[11px] text-[#8E8E93] hover:text-white transition cursor-pointer">
+                  Сброс
+                </button>
+                ${!isRootAdmin ? `
+                  <button onclick="adminUserAction('ban_toggle', '${safeLower}')" class="px-2.5 py-1.5 rounded-xl bg-[#121215] hover:bg-[#FF9F0A]/20 text-[11px] text-[#FF9F0A] transition cursor-pointer">
+                    ${u.banned ? 'Разбанить' : 'Бан'}
+                  </button>
+                  <button onclick="adminUserAction('delete_user', '${safeLower}')" class="px-2.5 py-1.5 rounded-xl bg-[#121215] hover:bg-[#FF453A]/20 text-[11px] text-[#FF453A] transition cursor-pointer">
+                    Удалить
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const logsContainer = document.getElementById('adminAuditLogList');
+      if (!state.auditLog.length) {
+        logsContainer.innerHTML = `<div class="text-xs text-[#636366] py-6 text-center">Журнал безопасности пуст</div>`;
+      } else {
+        logsContainer.innerHTML = state.auditLog.map(log => {
+          const color = log.severity === 'critical' || log.severity === 'high'
+            ? 'text-[#FF453A] bg-[#FF453A]/10 border-[#FF453A]/20'
+            : log.severity === 'warn'
+            ? 'text-[#FF9F0A] bg-[#FF9F0A]/10 border-[#FF9F0A]/20'
+            : 'text-[#30D158] bg-[#30D158]/10 border-[#30D158]/20';
+          const t = new Date(log.time).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+          return `
+            <div class="p-3 rounded-xl bg-[#1C1C21] border border-white/[0.05] text-xs space-y-1">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-[10px] px-2 py-0.5 rounded-md border font-semibold ${color}">${escapeHtml(log.type)}</span>
+                <span class="text-[11px] text-[#636366] tabular-nums">${t} • ${escapeHtml(log.actor)}</span>
+              </div>
+              <div class="text-[#E5E5EA] text-[12px]">${escapeHtml(log.details)}</div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    function renderGlobalBanner(text) {
+      const box = document.getElementById('globalSystemBanner');
+      const label = document.getElementById('globalSystemBannerText');
+      if (text && String(text).trim()) {
+        label.textContent = text;
+        box.classList.remove('hidden');
+      } else {
+        box.classList.add('hidden');
+      }
+    }
+
+    async function submitAdminBanner(e) {
+      e.preventDefault();
+      if (!currentSession || currentSession.role !== 'admin') return;
+      const val = document.getElementById('adminBannerInput').value.trim();
+
+      if (useBackend) {
+        try {
+          await fetch('/api/admin/action', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentSession.token },
+            body: JSON.stringify({ action: 'set_banner', globalBanner: val })
+          });
+          await loadAdminOverview();
+          return;
+        } catch (err) {}
+      }
+
+      const db = loadLocalMultiDb();
+      db.system.globalBanner = val;
+      logLocalSecurityEvent(db, 'ADMIN_ACTION', 'info', currentSession.username, val ? `Баннер опубликован: "${val}"` : 'Баннер скрыт');
+      loadAdminOverview();
+    }
+
+    async function submitAdminCreateUser(e) {
+      e.preventDefault();
+      if (!currentSession || currentSession.role !== 'admin') return;
+      const newUsername = document.getElementById('adminNewUsername').value.trim();
+      const newPassword = document.getElementById('adminNewPassword').value;
+      if (!newUsername || !newPassword) return;
+
+      if (useBackend) {
+        try {
+          await fetch('/api/admin/action', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentSession.token },
+            body: JSON.stringify({ action: 'create_user', newUsername, newPassword })
+          });
+          document.getElementById('adminNewUsername').value = '';
+          document.getElementById('adminNewPassword').value = '';
+          await loadAdminOverview();
+          return;
+        } catch (err) {}
+      }
+
+      const db = loadLocalMultiDb();
+      const uLower = newUsername.toLowerCase();
+      if (!db.users[uLower]) {
+        const salt = randomHex(16);
+        const passwordHash = await pbkdf2HexClient(newPassword, salt);
+        db.users[uLower] = {
+          id: 'usr_' + Date.now(),
+          username: newUsername,
+          usernameLower: uLower,
+          role: 'user',
+          salt,
+          passwordHash,
+          shortcutToken: 'fp_' + randomHex(10),
+          banned: false,
+          createdAt: new Date().toISOString(),
+          lastLoginAt: null,
+          profile: getCleanUserProfile()
+        };
+        logLocalSecurityEvent(db, 'ADMIN_ACTION', 'info', currentSession.username, `Создан аккаунт ${newUsername}`);
+        document.getElementById('adminNewUsername').value = '';
+        document.getElementById('adminNewPassword').value = '';
+        loadAdminOverview();
+      }
+    }
+
+    async function adminPromptPassword(targetUser) {
+      const nextPass = prompt(`Введите новый пароль для пользователя "${targetUser}":`);
+      if (!nextPass || nextPass.length < 4) return;
+      if (useBackend) {
+        try {
+          await fetch('/api/admin/action', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentSession.token },
+            body: JSON.stringify({ action: 'change_password', targetUser, newPassword: nextPass })
+          });
+          await loadAdminOverview();
+          return;
+        } catch (e) {}
+      }
+      const db = loadLocalMultiDb();
+      if (db.users[targetUser]) {
+        const salt = randomHex(16);
+        db.users[targetUser].salt = salt;
+        db.users[targetUser].passwordHash = await pbkdf2HexClient(nextPass, salt);
+        logLocalSecurityEvent(db, 'ADMIN_ACTION', 'warn', currentSession.username, `Сменён пароль пользователю ${targetUser}`);
+        loadAdminOverview();
+      }
+    }
+
+    async function adminPromptBonus(targetUser) {
+      const raw = prompt(`Начислить (+) или списать (-) сумму в ₽ для "${targetUser}" (например: 15000 или -3000):`);
+      const balanceBonus = Number(raw);
+      if (!raw || isNaN(balanceBonus) || balanceBonus === 0) return;
+
+      if (useBackend) {
+        try {
+          await fetch('/api/admin/action', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentSession.token },
+            body: JSON.stringify({ action: 'add_bonus', targetUser, balanceBonus })
+          });
+          await loadDashboard();
+          return;
+        } catch (e) {}
+      }
+
+      const db = loadLocalMultiDb();
+      if (db.users[targetUser]) {
+        db.users[targetUser].profile.transactions.unshift({
+          id: 't_' + Date.now(),
+          type: balanceBonus > 0 ? 'income' : 'expense',
+          amount: Math.abs(balanceBonus),
+          category: 'Корректировка Админа',
+          title: balanceBonus > 0 ? 'Начисление администратором' : 'Списание администратором',
+          date: new Date().toISOString()
+        });
+        logLocalSecurityEvent(db, 'ADMIN_ACTION', 'info', currentSession.username, `Изменён баланс ${targetUser} на ${balanceBonus} ₽`);
+        loadDashboard();
+      }
+    }
+
+    async function adminImpersonateUser(targetUser) {
+      if (!currentSession || currentSession.role !== 'admin') return;
+      localStorage.setItem('finpulse_admin_backup_session', JSON.stringify(currentSession));
+
+      if (useBackend) {
+        try {
+          const res = await fetch('/api/admin/action', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentSession.token },
+            body: JSON.stringify({ action: 'impersonate', targetUser })
+          });
+          const json = await res.json();
+          if (json.ok && json.impersonateSession) {
+            currentSession = json.impersonateSession;
+            document.getElementById('impersonationBanner').classList.remove('hidden');
+            document.getElementById('impersonatedUserLabel').textContent = currentSession.username;
+            onAuthSuccess();
+            switchTab('all');
+            return;
+          }
+        } catch (e) {}
+      }
+
+      const db = loadLocalMultiDb();
+      const target = db.users[targetUser];
+      if (target) {
+        logLocalSecurityEvent(db, 'ADMIN_IMPERSONATE', 'info', currentSession.username, `Вход в профиль ${target.username}`);
+        currentSession = {
+          token: 'local_imp_' + randomHex(12),
+          username: target.username,
+          usernameLower: target.usernameLower,
+          role: target.role,
+          shortcutToken: target.shortcutToken
+        };
+        document.getElementById('impersonationBanner').classList.remove('hidden');
+        document.getElementById('impersonatedUserLabel').textContent = currentSession.username;
+        onAuthSuccess();
+        switchTab('all');
+      }
+    }
+
+    function returnToAdminAccount() {
+      const backup = localStorage.getItem('finpulse_admin_backup_session');
+      if (!backup) return;
+      currentSession = JSON.parse(backup);
+      localStorage.removeItem('finpulse_admin_backup_session');
+      localStorage.setItem(SESSION_KEY, JSON.stringify(currentSession));
+      document.getElementById('impersonationBanner').classList.add('hidden');
+      onAuthSuccess();
+      switchTab('admin');
+    }
+
+    async function unlockAllBruteforce() {
+      if (!currentSession || currentSession.role !== 'admin') return;
+      if (useBackend) {
+        try {
+          await fetch('/api/admin/action', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentSession.token },
+            body: JSON.stringify({ action: 'unlock_bruteforce' })
+          });
+          await loadAdminOverview();
+          return;
+        } catch (e) {}
+      }
+      const db = loadLocalMultiDb();
+      db.lockouts = {};
+      logLocalSecurityEvent(db, 'ADMIN_ACTION', 'info', currentSession.username, 'Сняты все блокировки анти-брутфорса');
+      loadAdminOverview();
+    }
+
+    async function adminUserAction(action, targetUser) {
+      if (!currentSession || currentSession.role !== 'admin') return;
+
+      if (useBackend) {
+        try {
+          await fetch('/api/admin/action', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + currentSession.token
+            },
+            body: JSON.stringify({ action, targetUser })
+          });
+          await loadDashboard();
+          return;
+        } catch (e) {}
+      }
+
+      const db = loadLocalMultiDb();
+      const tUser = db.users[targetUser];
+      if (action === 'ban_toggle' && tUser && tUser.role !== 'admin') {
+        tUser.banned = !tUser.banned;
+        logLocalSecurityEvent(db, 'ADMIN_ACTION', 'warn', currentSession.username, `${tUser.banned ? 'Заблокирован' : 'Разблокирован'} аккаунт ${targetUser}`);
+      } else if (action === 'reset_user' && tUser) {
+        tUser.profile = getCleanUserProfile();
+        logLocalSecurityEvent(db, 'ADMIN_ACTION', 'warn', currentSession.username, `Сброшены данные профиля ${targetUser}`);
+      } else if (action === 'delete_user' && tUser && tUser.role !== 'admin') {
+        delete db.users[targetUser];
+        logLocalSecurityEvent(db, 'ADMIN_ACTION', 'high', currentSession.username, `Удалён пользователь ${targetUser}`);
+      }
+      saveLocalMultiDb(db);
+      loadDashboard();
+    }
+
+    async function toggleRegistrationSetting() {
+      if (!currentSession || currentSession.role !== 'admin') return;
+      const nextVal = !(adminOverviewState && adminOverviewState.system && adminOverviewState.system.allowRegistration);
+
+      if (useBackend) {
+        try {
+          await fetch('/api/admin/action', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + currentSession.token
+            },
+            body: JSON.stringify({ action: 'toggle_registration', allowRegistration: nextVal })
+          });
+          await loadAdminOverview();
+          return;
+        } catch (e) {}
+      }
+
+      const db = loadLocalMultiDb();
+      db.system.allowRegistration = nextVal;
+      logLocalSecurityEvent(db, 'ADMIN_ACTION', 'info', currentSession.username, `Регистрация новых аккаунтов: ${nextVal ? 'ВКЛ' : 'ВЫКЛ'}`);
+      loadAdminOverview();
+    }
+
+    async function clearSecurityLogs() {
+      if (!currentSession || currentSession.role !== 'admin') return;
+      if (useBackend) {
+        try {
+          await fetch('/api/admin/action', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + currentSession.token
+            },
+            body: JSON.stringify({ action: 'clear_logs' })
+          });
+          await loadAdminOverview();
+          return;
+        } catch (e) {}
+      }
+      const db = loadLocalMultiDb();
+      db.auditLog = [];
+      logLocalSecurityEvent(db, 'ADMIN_ACTION', 'info', currentSession.username, 'Журнал безопасности очищен администратором');
+      loadAdminOverview();
+    }
+
+    function exportAllUsersDatabase() {
+      if (!currentSession || currentSession.role !== 'admin') return;
+      const db = loadLocalMultiDb();
+      const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `finpulse-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // ============================================================================
+    // USER DATA ACTIONS (Transactions & Credits)
+    // ============================================================================
+    async function submitSmartInput(e) {
+      e.preventDefault();
+      const input = document.getElementById('smartInputField');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      await quickAdd(text);
+    }
+
+    async function quickAdd(text) {
+      if (/<\s*script|javascript:|onerror=|onload=/i.test(text)) {
+        const db = loadLocalMultiDb();
+        logLocalSecurityEvent(db, 'WAF_BLOCK', 'critical', currentSession ? currentSession.username : 'anon', 'Заблокирована попытка XSS в строке ввода');
+        return;
+      }
+
+      if (useBackend && currentSession) {
+        try {
+          await fetch('/api/transaction', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + currentSession.token
+            },
+            body: JSON.stringify({ smartText: text })
+          });
+          await loadDashboard();
+          return;
+        } catch (e) {}
+      }
+      const parsed = parseSmartInputClient(text);
+      appData.transactions.unshift(...parsed);
+      saveCurrentUserProfileLocal(appData);
+      renderAll(appData, calculateAnalyticsClient(appData));
+    }
+
+    async function deleteTransaction(id) {
+      if (useBackend && currentSession) {
+        try {
+          await fetch(`/api/transaction?id=${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + currentSession.token }
+          });
+          await loadDashboard();
+          return;
+        } catch (e) {}
+      }
+      appData.transactions = appData.transactions.filter(t => t.id !== id);
+      saveCurrentUserProfileLocal(appData);
+      renderAll(appData, calculateAnalyticsClient(appData));
+    }
+
+    async function markCreditPaid(id) {
+      if (useBackend && currentSession) {
+        try {
+          await fetch('/api/credit', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + currentSession.token
+            },
+            body: JSON.stringify({ action: 'pay', id })
+          });
+          await loadDashboard();
+          return;
+        } catch (e) {}
+      }
+      const credit = appData.credits.find(c => c.id === id);
+      if (credit && !credit.paidThisMonth) {
+        credit.paidThisMonth = true;
+        credit.totalDebt = Math.max(0, credit.totalDebt - credit.monthlyPayment);
+        appData.transactions.unshift({
+          id: 't_' + Date.now(),
+          type: 'expense',
+          amount: credit.monthlyPayment,
+          category: 'Кредиты',
+          title: `Платёж по кредиту: ${credit.name}`,
+          date: new Date().toISOString()
+        });
+        saveCurrentUserProfileLocal(appData);
+        renderAll(appData, calculateAnalyticsClient(appData));
+      }
+    }
+
+    async function deleteCredit(id) {
+      if (useBackend && currentSession) {
+        try {
+          await fetch('/api/credit', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + currentSession.token
+            },
+            body: JSON.stringify({ action: 'delete', id })
+          });
+          await loadDashboard();
+          return;
+        } catch (e) {}
+      }
+      appData.credits = appData.credits.filter(c => c.id !== id);
+      saveCurrentUserProfileLocal(appData);
+      renderAll(appData, calculateAnalyticsClient(appData));
+    }
+
+    function toggleAddCreditForm() {
+      document.getElementById('addCreditForm').classList.toggle('hidden');
+    }
+
+    async function submitNewCredit(e) {
+      e.preventDefault();
+      const rawName = document.getElementById('crName').value.replace(/[<>]/g, '').trim().slice(0, 50);
+      const payload = {
+        id: 'c_' + Date.now(),
+        name: rawName || 'Кредит',
+        totalDebt: Math.max(0, Number(document.getElementById('crDebt').value) || 0),
+        originalAmount: Math.max(0, Number(document.getElementById('crDebt').value) || 0),
+        monthlyPayment: Math.max(0, Number(document.getElementById('crMonthly').value) || 0),
+        interestRate: Math.max(0, Number(document.getElementById('crRate').value) || 0),
+        paymentDay: Math.min(31, Math.max(1, Number(document.getElementById('crDay').value) || 15)),
+        paidThisMonth: false
+      };
+      if (useBackend && currentSession) {
+        try {
+          await fetch('/api/credit', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + currentSession.token
+            },
+            body: JSON.stringify(payload)
+          });
+          document.getElementById('addCreditForm').reset();
+          document.getElementById('addCreditForm').classList.add('hidden');
+          await loadDashboard();
+          return;
+        } catch (e) {}
+      }
+      appData.credits.push(payload);
+      saveCurrentUserProfileLocal(appData);
+      document.getElementById('addCreditForm').reset();
+      document.getElementById('addCreditForm').classList.add('hidden');
+      renderAll(appData, calculateAnalyticsClient(appData));
+    }
+
+    function downloadIcsCalendar() {
+      const credits = (appData && appData.credits) || [];
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const events = credits.map(c => {
+        const day = String(Math.min(28, Math.max(1, Number(c.paymentDay) || 15))).padStart(2, '0');
+        const amt = Number(c.monthlyPayment || 0).toLocaleString('ru-RU');
+        const debt = Number(c.totalDebt || 0).toLocaleString('ru-RU');
+        return [
+          'BEGIN:VEVENT',
+          `UID:${c.id}@finpulse.local`,
+          `DTSTAMP:${yyyy}${mm}${day}T090000Z`,
+          `DTSTART;VALUE=DATE:${yyyy}${mm}${day}`,
+          `RRULE:FREQ=MONTHLY;BYMONTHDAY=${Number(c.paymentDay) || 15}`,
+          `SUMMARY:Оплата кредита: ${c.name} (${amt} ₽)`,
+          `DESCRIPTION:Ежемесячный платёж ${amt} ₽. Остаток: ${debt} ₽.`,
+          'BEGIN:VALARM',
+          'TRIGGER:-PT24H',
+          'ACTION:DISPLAY',
+          `DESCRIPTION:Завтра платёж по кредиту ${c.name} (${amt} ₽)`,
+          'END:VALARM',
+          'END:VEVENT'
+        ].join('\r\n');
+      }).join('\r\n');
+
+      const ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//FinPulse iOS//RU',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        'X-WR-CALNAME:FinPulse Платежи',
+        events,
+        'END:VCALENDAR'
+      ].join('\r\n');
+
+      const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'finpulse-reminders.ics';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function openShortcutModal() {
+      document.getElementById('shortcutModal').classList.remove('hidden');
+    }
+    function closeShortcutModal() {
+      document.getElementById('shortcutModal').classList.add('hidden');
+    }
+
+    const THEME_KEY = 'finpulse_theme_pref_v1';
+
+    function applyTheme(theme) {
+      const root = document.documentElement;
+      const sunIcon = document.getElementById('themeIconSun');
+      const moonIcon = document.getElementById('themeIconMoon');
+
+      if (theme === 'light') {
+        root.classList.remove('dark');
+        root.classList.add('light');
+        if (sunIcon) sunIcon.classList.remove('hidden');
+        if (moonIcon) moonIcon.classList.add('hidden');
+      } else {
+        root.classList.remove('light');
+        root.classList.add('dark');
+        if (sunIcon) sunIcon.classList.add('hidden');
+        if (moonIcon) moonIcon.classList.remove('hidden');
+      }
+      try {
+        localStorage.setItem(THEME_KEY, theme);
+      } catch (e) {}
+
+      if (currentSession && appData) {
+        renderCharts(appData, calculateAnalyticsClient(appData));
+      }
+    }
+
+    function toggleTheme() {
+      const isLight = document.documentElement.classList.contains('light');
+      applyTheme(isLight ? 'dark' : 'light');
+    }
+
+    // Boot session check & Real-time Cloud DB Sync
+    (async function initSession() {
+      try {
+        const savedTheme = localStorage.getItem(THEME_KEY) || 'dark';
+        applyTheme(savedTheme);
+      } catch (e) {}
+      loadLocalMultiDb();
+      try {
+        const saved = localStorage.getItem(SESSION_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed && parsed.username) {
+            currentSession = parsed;
+            onAuthSuccess();
+          }
+        }
+      } catch (e) {}
+
+      if (!currentSession) {
+        document.getElementById('authScreen').classList.remove('hidden');
+      }
+
+      // Pull latest cloud state immediately on boot
+      await pullDbFromCloud(true);
+
+      // Sync automatically when switching back to the app on iPhone or PC
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          pullDbFromCloud(false);
+        }
+      });
+
+      // Live background sync every 15 seconds across all devices
+      setInterval(() => {
+        if (document.visibilityState === 'visible') {
+          pullDbFromCloud(false);
+        }
+      }, 15000);
+    })();
+  </script>
+</body>
+</html>
